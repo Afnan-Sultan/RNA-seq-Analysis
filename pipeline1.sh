@@ -1,6 +1,8 @@
 #!/bin/bash
 #implementing HISAT2 and Stringtie 
 
+sudo apt-get updat #just a step to make sure everything is updated
+
 : <<'END'
 - Requierments: 
   1-  a unix operating system (in this project, ubuntu 16.04 was used) 
