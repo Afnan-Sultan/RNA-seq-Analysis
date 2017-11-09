@@ -10,7 +10,7 @@
        * StringTie software
        * gffcompare
        * The data to use (in this case, chromosome X data - Homosapiens) 
-     * all these requirements will be obtained during the pipeline1.sh excution. 
+     * all these required files and softwarews will be obtained during the pipeline1.sh excution. 
   - STAR as an aligner, and Scripture as an assembler. 
 - pipline1.sh file is illustrating all the requirements and steps to apply HISAT/StringTie pipeline. 
   * before excuting pipeline1.sh, you will need to set some paths and directories firstly. So, open the file and look for $ signs.
