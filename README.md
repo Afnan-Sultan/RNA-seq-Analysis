@@ -4,7 +4,7 @@
   - HISAT2 as an aligner, and StringTie as an assembler.
     * requirements for this pipeline: 
        * a unix operating system (in this project, ubuntu 16.04 was used) 
-       *64-bit computer with 4 to 8 GB RAM
+       * 64-bit computer with 4 to 8 GB RAM
        * HISAT2 software
        * Samtools
        * StringTie software
