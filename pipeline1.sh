@@ -70,6 +70,8 @@ cp gffcompare/gffcompare $HOME/RNA-seq
   5- comparing the trancsript with the reference annotation.  
 END
 
+cd $HOME/RNA-seq
+
 # Map the reads for each sample to the reference genome:
 
 hisat2 -p 8 --dta -x chrX_data/indexes/chrX_tran -1 chrX_data/samples/ERR188044_chrX_1.fastq.gz -2 chrX_data/samples/ERR188044_chrX_2.fastq.gz -S ERR188044_chrX.sam
