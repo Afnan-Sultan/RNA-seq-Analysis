@@ -25,7 +25,6 @@ sudo apt-get install git #installing GitHub
 git clone https://github.com/infphilo/hisat2 #installing Hisat2
 
 wget https://github.com/samtools/samtools/releases/download/1.6/samtools-1.6.tar.bz2 -O - | tar xj #downloadeing samtools
-cd /home/$username/Downloads #where username is your OS user name 
 tar jxvf samtools-1.6.tar.bz2
 cd samtools-1.6
 make
