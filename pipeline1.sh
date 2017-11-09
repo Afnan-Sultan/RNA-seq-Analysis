@@ -4,17 +4,6 @@
 sudo apt-get updat #just a step to make sure everything is updated
 
 : <<'END'
-- Requierments: 
-  1-  a unix operating system (in this project, ubuntu 16.04 was used) 
-  2-  64-bit computer with 4 to 8 GB RAM 
-  3-  HISAT2 software
-  4-  Samtools 
-  5-  StringTie software
-  6-  gffcompare
-  7-  The data to use (in this case, chromosome X data - Homosapiens) 
-END
-
-: <<'END'
 - downloads and installment:  
   1-  download the data using the following command on the terminal (The zip file is around 2GB) and unzip it.
   2-  if you don't hav GitHub installed already in your OS, use the following command on the terminal to install it. 
