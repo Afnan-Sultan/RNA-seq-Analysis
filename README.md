@@ -5,3 +5,7 @@
   - STAR as an aligner, and Scripture as an assembler. 
 - pipline1.sh file is illustrating all the requirements and steps to apply HISAT/StringTie pipeline. 
   * before excuting pipeline1.sh, you will need to set some paths and directories firstly. So, open the file and look for $ signs.
+  * apply the following commands to get permission to excute pipeline1.sh file and to initiate it
+  $ chmod 755 pipeline1.sh 
+  $ ./pipeline1.sh
+  
