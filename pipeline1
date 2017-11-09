@@ -6,7 +6,8 @@
   3-  HISAT2 software
   4-  Samtools 
   5-  StringTie software
-  6-  The data to use (in this case, chromosome X data - Homosapiens) 
+  6-  gffcompare
+  7-  The data to use (in this case, chromosome X data - Homosapiens) 
 
 - downloads and installment:  
   1-  download the data using the following command on the terminal (The zip file is around 2GB)
@@ -46,11 +47,35 @@ $ cd stringtie
 $ make release
 $ cd
 
+  6- clone gffcompare with the dependancy gclib and make release it by the following commands
+$ git clone https://github.com/gpertea/gclib
+$ git clone https://github.com/gpertea/gffcompare
+$ cd gffcompare
+$ make release
+
 - Setting the environment: 
   1-  create a directory to store all the requiered inputs/outputs inside. The file created could be named RNA-seq, use the 
       following command
 $ mkdir $HOME/RNA-seq
       where $HOME is the desired path to place the directory at. 
+      
+  2- add that file to your PATH so it becomes easy to run excutable files without needing to cd its directory. 
+$ export $HOME/RNA-seq:$PATH
+     if you used 
+$ echo $PATH 
+     you will manage to see all the files that are already in your PATH so far. 
+  
+  3-  now, copy all the data we need into that directory, including our chromosom X data, Hisat2, samtools and strinTie binaries.
+$ cp $HOME/samtools-01.6/samtools $HOME/RNA-seq
+$ cp hisat2/hisat2* hisat2/*.py $HOME/RNA-seq
+$ cp stringtie/stringtie $HOME/RNA-seq
+$ cp gffcompare/gffcompare $HOME/RNA-seq
+
+- excution: 
+
+
+
+
  
 
      
