@@ -50,7 +50,7 @@ cd
 END
 
 mkdir $HOME/RNA-seq #where $HOME is the desired path to place the directory at.  
-export $HOME/RNA-seq:$PATH #adding to path
+export PATH=$HOME/RNA-seq:$PATH #adding to path
 
 #copying data from chromosome X, samtools, Hisat, Stringtie & gffcompare
 cp $HOME/chrX_dtat $HOME/RNA-seq #where $HOME is the path to our directory
