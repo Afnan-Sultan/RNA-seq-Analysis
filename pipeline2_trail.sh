@@ -1,3 +1,6 @@
+#!/bin/bash
+#implementing STAR and * 
+
 #downloading STAR and unziping it
 wget https://github.com/alexdobin/STAR/archive/2.5.3a.tar.gz 
 tar xvzf chrX_data.tar.gz
