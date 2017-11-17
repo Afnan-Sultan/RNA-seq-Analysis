@@ -16,15 +16,14 @@ sudo apt-get updat #just a step to make sure everything is updated
 END
 
 wget ftp://ftp.ccb.jhu.edu/pub/RNAseq_protocol/chrX_data.tar.gz #download data
-cd /home/$username/Downloads #where username is your OS user name
 tar xvzf chrX_data.tar.gz #unzip it
 cd #getting out of the directory
 
-sudo apt-get install git #installing GitHub
+sudo apt-get install git #installing GitHub in case you don't have it
  
 git clone https://github.com/infphilo/hisat2 #installing Hisat2
 
-wget https://github.com/samtools/samtools/releases/download/1.6/samtools-1.6.tar.bz2 -O - | tar xj #downloadeing samtools
+wget https://github.com/samtools/samtools/releases/download/1.6/samtools-1.6.tar.bz2 -O - | tar xj #downloadeing & installing samtools
 tar jxvf samtools-1.6.tar.bz2
 cd samtools-1.6
 make
@@ -53,7 +52,7 @@ mkdir $HOME/RNA-seq #where $HOME is the desired path to place the directory at.
 export PATH=$HOME/RNA-seq:$PATH #adding to path
 
 #copying data from chromosome X, samtools, Hisat, Stringtie & gffcompare
-cp $HOME/chrX_dtat $HOME/RNA-seq #where $HOME is the path to our directory
+cp $HOME/chrX_data $HOME/RNA-seq #where $HOME is the path to our directory
 cp $HOME/samtools-01.6/samtools $HOME/RNA-seq 
 cp hisat2/hisat2* hisat2/*.py $HOME/RNA-seq
 cp stringtie/stringtie $HOME/RNA-seq
