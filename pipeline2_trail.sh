@@ -55,6 +55,9 @@ cp $HOME/chrX_data/genome/chrX.fa  /home/$username/STAR-2.5.3a
 cp $HOME/chrX_data/samples/ERR188044_chrX_1.fastq.gz  /home/$username/STAR-2.5.3a/ 
 cp $HOME/chrX_data/samples/ERR188044_chrX_2.fastq.gz  /home/$username/STAR-2.5.3a/
 
+#copy gffcompare to do a comparison when done with the assembly
+cp $HOME/gffcompare/gffcompare  /home/$username/STAR-2.5.3a 
+
 #adding STAR and scallop binary files to PATH environment
 cp /home/$username/STAR-2.5.3a/bin/Linux_x86_64/STAR /usr/bin
 cp /home/$username/scallop/src/scallop /usr/bin 
@@ -76,3 +79,7 @@ samtools sort -@ 8 -o Aligned.out.bam Aligned.out.sam
 
 #transcriptom assembly
 scallop -i Aligned.out.bam -o Aligned.out.gtf 
+
+# Examine how the transcripts compare with the reference annotation
+./gffcompare -r chrX.gtf -G -o merged Aligned.out.gtf
+
