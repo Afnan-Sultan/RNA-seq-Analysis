@@ -45,10 +45,7 @@ cp gffcompare/gffcompare /usr/bin
 
 #genome indexing without gtf annotation
 mkdir $HOME/RNA-seq/index
-hisat2_extract_splice_sites.py $HOME/chrX_data/genome/chrX.fa > /home/$username/RNA_seq/splicesites.tsv
-hisat2_extract_exons.py $HOME/chrX_data/genome/chrX.fa > /home/$username/RNA_seq/exons.tsv
-hisat2-build -p 8 --ss /home/$username/RNA_seq/splicesites.tsv --exon /home/afnan/RNA_seq/exons.tsv 
-$HOME/chrX_data/genome/chrX.fa /$HOME/RNA_seq/index/index 
+hisat2-build -p 8 --ss HOME/chrX_data/genome/chrX.fa /$HOME/RNA_seq/index/index 
 
 # loop over the reads to map them for each sample to the reference genome:
 
