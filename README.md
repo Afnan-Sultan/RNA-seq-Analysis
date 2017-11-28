@@ -23,13 +23,27 @@
       * the data to use -which is the same chromosome X we already have-
      * all these required files and softwarews will be obtained during the pipeline1.sh excution. 
      * you need to open the script first and change any $HOME/$username with the path to the directory requiered or you PC username
+     
+     
 - pipline1_trail.sh file is illustrating all the requirements and steps to apply HISAT/StringTie pipeline with a small data which is chromosome X from human. 
   * before excuting pipeline1_trail.sh, you will need to set some paths and directories firstly. So, open the file and look for $ signs.
   * apply the following commands to get permission to excute pipeline1_trail.sh file and to initiate it
     * $ chmod 755 pipeline1.sh 
     * $ ./pipeline1_trail.sh
+   
+   
 - pipline2_trail.sh file is illustrating all the requirements and steps to apply STAR/scallop pipeline with the same data of chromosome X from human, but only couple of reads were used for simplicity. 
   * before excuting pipeline1_trail.sh, you will need to set some paths and directories firstly. So, open the file and look for $ signs.
   * apply the following commands to get permission to excute pipeline2_trail.sh file and to initiate it
     * $ chmod 755 pipeline2.sh 
     * $ ./pipeline2_trail.sh
+
+- bedtools-pipeline1.sh file is for the analysis of the resulting transcript gtf file using bedtools. In this file, we will find out which exons intersect withing the reference transcriptome, which introns intersect and which intergenic regions will intersect; using two commands from bedtools software
+  * bedtools complement 
+  * bedtools intersect 
+* bedtool complement will be applied to both genome and transcript file to extract intergenic and intronic regions respetively. intersect is then used for our assembled gtf with the complenet genome, complement transcript and transcript file itself to spot any intersection between any of these files.
+* before excuting pipeline1_trail.sh, you will need to set some paths and directories firstly. So, open the file and look for $ signs.
+* apply the following commands to get permission to excute pipeline2_trail.sh file and to initiate it
+    * $ chmod 755 bedtools-pipeline1.sh 
+    * $ ./bedtools-pipeline1_trail.sh
+ 
