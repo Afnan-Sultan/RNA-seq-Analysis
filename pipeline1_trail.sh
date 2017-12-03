@@ -89,7 +89,7 @@ cd final_output/
 stringtie --merge /home/$username/RNA-seq/*.gtf -o stringtie_merged.gtf
 
 # Examine how the transcripts compare with the reference annotation:
-gffcompare -r /home/$username/RNA-seq/chrX_data/genes/chrX.gtf -o gffOutput merged_transcript.gtf 
+gffcompare -r /home/$username/RNA-seq/chrX_data/genes/chrX.gtf -o gffOutput stringtie_merged.gtf 
 
 
 #---------------------------------------------------------------------------------------------------------#
