@@ -37,64 +37,50 @@ cd
 mkdir $HOME/RNA-seq #where $HOME is the desired path to place the directory at.  
 
 #copying data from chromosome X to our work directory, and samtools, Hisat, Stringtie & gffcompare to $PATH
-cp $HOME/chrX_dtat $HOME/RNA-seq #where $HOME is the path to our directory
-cp $HOME/samtools-01.6/samtools /usr/bin
-cp hisat2/hisat2* hisat2/*.py /usr/bin
-cp stringtie/stringtie /usr/bin
-cp gffcompare/gffcompare /usr/bin
+cp $HOME/chrX_dtat $HOME/RNA-seq #where $HOME is the path to directory
+sudo cp $HOME/samtools-01.6/samtools /usr/bin
+sudo cp hisat2/hisat2* hisat2/*.py /usr/bin
+sudo cp stringtie/stringtie /usr/bin
+sudo cp gffcompare/gffcompare /usr/bin
 
 #genome indexing without gtf annotation
 mkdir $HOME/RNA-seq/index
 hisat2-build -p 8 --ss HOME/chrX_data/genome/chrX.fa /$HOME/RNA_seq/index/index 
 
-# loop over the reads to map them for each sample to the reference genome:
-
-arr=(/home/afnan/chrX_data/samples/*)
-for ((i=0; i<${#arr[@]}; i=i+2)); do
-    #echo ${arr[$i]}, ${arr[$i+1]}
-    s=${arr[$i]}
-    v=${s:30:-11}.sam
-    #echo $v
-    ./hisat2 -p 8 --dta -x chrX_data/index/index -1 ${arr[$i]} -2 ${arr[$i+1]} -S $v
-b
+# loop over the paired reads to map them to the reference genome:
+arr=(/home/afnan/chrX_data/samples/*) #store all fastq.gz files in an array to loop over
+for ((i=0; i<${#arr[@]}; i=i+2)); do #excute the loop with base 2
+    s=${arr[$i]} 
+    v="$(basename $s)"| sed s/_1.fastq.gz/.sam/ #naming the output fila based on the input file. basename is to get the file name without the path, and sed is to replace the extention. 
+    
+    hisat2 -p 8 --dta -x chrX_data/index/index -1 ${arr[$i]} -2 ${arr[$i+1]} -S $v
 done
-# Sort and convert the SAM files to BAM:
 
+# Sort and convert the SAM files to BAM:
 arr=(/home/afnan/RNA_seq/*.sam)
 for ((i=0; i<${#arr[@]}; i++)); do
-    #echo ${arr[$i]}, ${arr[$i+1]}
     s=${arr[$i]}
-    #echo $s
-    v=${s:20:-4}.bam
-    #echo $v
+    v="$(basename $s)"| sed s/.sam/.bam/
+    
     samtools sort -@ 8 -o $v ${arr[$i]}
 done
 	
 
 # Assemble transcripts for each sample:
-
 arr=(/home/afnan/RNA_seq/*.bam)
 for ((i=0; i<${#arr[@]}; i++)); do
-    #echo ${arr[$i]}, ${arr[$i+1]}
     s=${arr[$i]}
-    #echo $s
-    v=${s:20:-4}.gtf
-    w=${s:20:-9}
-    #echo $v
-    #echo $w
+    v="$(basename $s)"| sed s/.bam/.gtf/
+    w="$(basename $s)"| sed s/.bam//
+ 
     stringtie -p 8 -G chrX_data/genes/chrX.gtf -o $v -l $w ${arr[$i]}
 done
 
 # Merge transcripts from all samples:
-
-stringtie --merge -p 8 -G chrX_data/genes/chrX.gtf -o stringtie_merged.gtf chrX_data/mergelist.txt
+stringtie --merge *.gtf -o merged_transcript.gtf
 
 # Examine how the transcripts compare with the reference annotation:
-
-gffcompare -r chrX_data/genes/chrX.gtf -G -o merged stringtie_merged.gtf
-
-
-
+gffcompare -r chrX_data/genes/chrX.gtf -o gffOutput merged_transcript.gtf 
 
 
 #---------------------------------------------------------------------------------------------------------#
