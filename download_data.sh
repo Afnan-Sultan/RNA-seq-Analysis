@@ -9,5 +9,5 @@ sudo cp /home/$username/sratoolkit.2.8.2-1-ubuntu64/bin/fastq-dump /usr/bin/
 
 #download the fastq data using the accession numbers' list
 cat $PATH/file.txt | while read acc_num ; do 
-    fastq-dump --outdir $PATH_to_storing_folder -- gzip -split-files $acc_num     
+    fastq-dump --outdir $PATH_to_storing_folder --gzip --split-files $acc_num     
 done
