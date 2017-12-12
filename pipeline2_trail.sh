@@ -41,11 +41,11 @@ cd
 
 #downloading STAR and unziping it
 wget https://github.com/alexdobin/STAR/archive/2.5.3a.tar.gz 
-tar xvzf chrX_data.tar.gz
+tar xvzf STAR-2.5.3a.tar.gz
 
 #adding STAR and scallop binary files to PATH environment
-sudo cp /home/$username/STAR-2.5.3a/bin/Linux_x86_64/STAR /usr/bin
-sudo cp /home/$username/scallop/src/scallop /usr/bin
+sudo cp /home/$username/STAR-2.5.3a/bin/Linux_x86_64/STAR /usr/bin/
+sudo cp /home/$username/scallop/src/scallop /usr/bin/
 
 #----------------------------------------------#
 
@@ -53,23 +53,31 @@ sudo cp /home/$username/scallop/src/scallop /usr/bin
 
 export LD_LIBRARY_PATH=/home/$username/coin-Clp/lib:LD_LIBRARY_PATH #set Clp library to be available for shared libraries
 
-mkdir /home/$username/star
+mkdir /home/$username/star-scallop
 
 #copy importanti files to work directory
-cp -r /home/$username/chrX_data /home/$username/star #where $HOME is the path to directory 
-cp -r /home/$username/STAR-2.5.3a/source /home/$username/star
+cp -r /home/$username/chrX_data /home/$username/star-scallop #where $HOME is the path to directory 
+cp -r /home/$username/STAR-2.5.3a/source /home/$username/star-scallop
+echo "files copied to workspace"
 
-#create a folder to store generated indixes files
-cd /home/$username/star/
+#create a folder to store generated indexes files
+cd /home/$username/star-scallop/
 mkdir genome 
+echo "folder created for storing genome indexes"
 
 #generating genome indexing with gtf annotation
 : <<'END'
-STAR --runThreadN 4 --runMode genomeGenerate --genomeDir /home/$username/star/genome/ --genomeFastaFiles /home/$username/star/chrX_data/chrX.fa --sjdbGTFfile /home/$username/star/chrX_data/chrX.gtf --sjdbOverhang 100
+STAR --runThreadN 1 --runMode genomeGenerate --genomeDir /home/$username/star-scallop/genome/ --genomeFastaFiles /home/$username/star-scallop/chrX_data/chrX.fa --sjdbGTFfile /home/$username/star-scallop/chrX_data/chrX.gtf --sjdbOverhang 100
+echo "genome indexes generated with reference gtf"
 END
 
 #generating genome indexing without gtf annotation
-STAR --runThreadN 4 --runMode genomeGenerate --genomeDir /home/$username/star/genome/ --genomeFastaFiles /home/$username/star/chrX_data/chrX.fa
+STAR --runThreadN 1 --runMode genomeGenerate --genomeDir /home/$username/star-scallop/genome/ --genomeFastaFiles /home/$username/star-scallop/chrX_data/chrX.fa
+echo "genome indexes generated without reference gtf"
+
+#creating a file to store the reads
+mkdir reads
+cd reads/
 
 #Mapping the reads with gtf reference  
 :<<'END'
@@ -77,9 +85,10 @@ arr=(/home/$username/chrX_data/samples/*) #store all fastq.gz files in an array 
 for ((i=0; i<${#arr[@]}; i=i+2)); do #excute the loop with base 2
     mkdir read_$i
     cd read_$i/
-    STAR --runThreadN 4 --genomeDir /home/$username/star/genome --sjdbGTFfile /home/$username/star/chrX_data/chrX.gtf --readFilesIn ${arr[$i]} ${arr[$i+1]} --readFilesCommand zcat
-    cd
-    cd star
+    STAR --runThreadN 1 --genomeDir /home/$username/star-scallop/genome --sjdbGTFfile /home/$username/star-scallop/chrX_data/chrX.gtf --readFilesIn ${arr[$i]} ${arr[$i+1]} --readFilesCommand zcat
+    cd ../
+done
+echo "reads mapped and stored in 'reads' directory with respect to gtf file"
 END
 
 #Mapping the reads without gtf reference
@@ -87,24 +96,32 @@ arr=(/home/$username/chrX_data/samples/*) #store all fastq.gz files in an array 
 for ((i=0; i<${#arr[@]}; i=i+2)); do #excute the loop with base 2
     mkdir read_$i
     cd read_$i/
-    STAR --runThreadN 4 --genomeDir /home/$username/star/genome --readFilesIn ${arr[$i]} ${arr[$i+1]} --readFilesCommand zcat
-    cd
-    cd star/
+    STAR --runThreadN 1 --genomeDir /home/$username/star-scallop/genome --readFilesIn ${arr[$i]} ${arr[$i+1]} --readFilesCommand zcat
+    cd ../
 done
+echo "reads mapped and stored in 'reads' directory with no respect to gtf file"
 
 #Sorting and converting the output sam file into bam file
-for dir in /home/$username/star/read_*; do
+for dir in /home/$username/star-scallop/reads/read_*; do
     cd $dir
-    samtools sort -o Aligned.out.bam Aligned.out.sam
+    v=$(echo "$(basename $dir)"| sed s/read//)
+    samtools sort -o Aligned.out$v.bam Aligned.out.sam
+    cp $dir/Aligned.out$v.bam  /home/afnan/star-scallop/
 done
+echo "sam files sorted, converted into bam files and copied to the 'star-scallop' directory"
+
+#create a directory to store the final transcript gffCompare stat 
+mkdir /home/$username/star-scallop/final_output
+cd final_output/
 
 #transcriptom assembly
 export LD_LIBRARY_PATH=/home/$username/coin-Clp/lib:LD_LIBRARY_PATH #set Clp library to be available for shared libraries
-for dir in /home/$username/star/read_*; do
-    cd $dir
-    scallop -i Aligned.out.bam -o Aligned.out.gtf 
-done
+scallop -i /home/$username/star-scallop/*.bam -o scallop_merged.gtf
+echo "bam files assembled into gtf file and stored at 'final_output' directory"
 
+# Examine how the transcripts compare with the reference annotation:
+gffcompare -r /home/$username/star-scallop/chrX_data/genes/chrX.gtf -o gffOutput scallop_merged.gtf 
+echo"gffCompare files generated and stored at 'final_output' directory"
 
 #--------------------------------------------------------------------------------------------------------#
 
