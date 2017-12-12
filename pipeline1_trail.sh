@@ -33,24 +33,20 @@ cd gffcompare
 make release
 cd
 
-#-------------------------------------------------------------------------------------------------------------------#
-
-#procedures
-
-#create a directory to store all the requiered inputs/outputs inside. we called the file created "RNA-seq".
-mkdir $HOME/RNA-seq #where $HOME is the desired path to place the directory at.  
-cd RNA-seq/
+#create a directory to store all the requiered inputs/outputs inside. we called the file created "hisat-stringtie".
+mkdir $HOME/hisat-stringtie #where $HOME is the desired path to place the directory at.  
+cd hisat-stringtie/
 
 #copying data from chromosome X to our work directory, and samtools, Hisat, Stringtie & gffcompare to $PATH
-cp -r $HOME/chrX_data $HOME/RNA-seq #where $HOME is the path to directory
+cp -r $HOME/chrX_data $HOME/hisat-stringtie #where $HOME is the path to directory
 sudo cp $HOME/samtools-01.6/samtools /usr/bin
 sudo cp hisat2/hisat2* hisat2/*.py /usr/bin
 sudo cp stringtie/stringtie /usr/bin
 sudo cp gffcompare/gffcompare /usr/bin
 
 #genome indexing without gtf annotation
-mkdir /home/$username/RNA-seq/chrX_data/index
-hisat2-build -p 8 HOME/chrX_data/genome/chrX.fa home/$username/RNA-seq/chrX_data/index/index 
+mkdir /home/$username/hisat-stringtie/chrX_data/index
+hisat2-build -p 8 HOME/chrX_data/genome/chrX.fa home/$username/hisat-stringtie/chrX_data/index/index 
 
 # loop over the paired reads to map them to the reference genome:
 arr=(/home/$username/chrX_data/samples/*) #store all fastq.gz files in an array to loop over
@@ -62,7 +58,7 @@ for ((i=0; i<${#arr[@]}; i=i+2)); do #excute the loop with base 2
 done
 
 # Sort and convert the SAM files to BAM:
-arr=(/home/$username/RNA-seq/*.sam)
+arr=(/home/$username/hisat-stringtie/*.sam)
 for ((i=0; i<${#arr[@]}; i++)); do
     s=${arr[$i]}
     v=$(echo "$(basename $s)"| sed s/.sam/.bam/)
@@ -72,7 +68,7 @@ done
 	
 
 # Assemble transcripts for each sample:
-arr=(/home/$username/RNA-seq/*.bam)
+arr=(/home/$username/hisat-stringtie/*.bam)
 for ((i=0; i<${#arr[@]}; i++)); do
     s=${arr[$i]}
     v=$(echo "$(basename $s)"| sed s/.bam/.gtf/)
@@ -81,16 +77,15 @@ for ((i=0; i<${#arr[@]}; i++)); do
     stringtie -o $v -l $w ${arr[$i]}
 done
 
-#create a directory to store the final transcript abd gff stat 
-mkdir /home/$username/RNA-seq/final_output
+#create a directory to store the final transcript gff stat 
+mkdir /home/$username/hisat-stringtie/final_output
 cd final_output/
 
 # Merge transcripts from all samples:
-stringtie --merge /home/$username/RNA-seq/*.gtf -o stringtie_merged.gtf
+stringtie --merge /home/$username/hisat-stringtie/*.gtf -o stringtie_merged.gtf
 
 # Examine how the transcripts compare with the reference annotation:
-gffcompare -r /home/$username/RNA-seq/chrX_data/genes/chrX.gtf -o gffOutput stringtie_merged.gtf 
-
+gffcompare -r /home/$username/hisat-stringtie/chrX_data/genes/chrX.gtf -o gffOutput stringtie_merged.gtf 
 
 #---------------------------------------------------------------------------------------------------------#
 
