@@ -2,11 +2,10 @@
 #downloading and installing the required programms for hisat/stringtie and star/scallop pipelines 
 
 work_dir="$(pwd)"
-cd $work_dir/
 
 #Download the human genome data we are going to need 
 mkdir hg38_data
-cd hg38_data/
+cd $work_dir/hg38_data/
 ftp://ftp.sanger.ac.uk/pub/gencode/Gencode_human/release_27/GRCh38.p10.genome.fa.gz #download the fasta file for indexes generating
 gunzip GRCh38.p10.genome.fa.gz
 
