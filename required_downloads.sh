@@ -7,7 +7,7 @@ work_dir="$(pwd)"
 mkdir hg38_data
 cd $work_dir/hg38_data/
 ftp://ftp.sanger.ac.uk/pub/gencode/Gencode_human/release_27/GRCh38.primary_assembly.genome.fa.gz #download the fasta file for indexes generating
-gunzip GRCh38.p10.genome.fa.gz
+gunzip GRCh38.primary_assembly.genome.fa.gz
 
 Wget ftp://ftp.sanger.ac.uk/pub/gencode/Gencode_human/release_27/gencode.v27.annotation.gtf.gz #download transcriptome gtf file to use for comparison 
 gunzip gencode.v27.annotation.gtf.gz
