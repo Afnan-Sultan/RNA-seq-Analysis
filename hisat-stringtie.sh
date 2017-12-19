@@ -14,7 +14,7 @@ mkdir $work_dir/hisat-stringtie
 
 #genome indexing without gtf annotation
 mkdir $work_dir/hg38/hisat_index
-hisat2-build -p 8 $work_dir/hg38_data/GRCh38.p10.genome.fa $work_dir/hg38_data/hisat_index/hg38
+hisat2-build -p 8 $work_dir/hg38_data/GRCh38.primary_assembly.genome.fa $work_dir/hg38_data/hisat_index/hg38
 
 #create directories for paper 1 liberaries/samples 
 mkdir $work_dir/hisat-stringtie/paper1 
