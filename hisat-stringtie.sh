@@ -103,7 +103,9 @@ awk 'BEGIN{OFS="\t";} $3=="gene" {print $1,$4-1,$5}' |
 sortBed | 
 subtractBed -a stdin -b hg38_exons.bed > $work_dir/hisat-stringtie/bedtools/hg38_introns.bed
 
-mysql --user=genome --host=genome-mysql.cse.ucsc.edu -A -e \ "select chrom, size from hg38.chromInfo"  > $work_dir/hisat-stringtie/bedtools/hg38.genome
+samtools faidx $work_dir/hg38_data/GRCh38.primary_assembly.genome.fa
+cut -f1,2 $work_dir/hg38_data/GRCh38.primary_assembly.genome.fa.fai > $work_dir/hisat-stringtie/bedtools/hg38.genome
+
 cat $work_dir/hg38_data/gencode.v27.annotation.gtf | 
 awk 'BEGIN{OFS="\t";} $3=="gene" {print $1,$4-1,$5}' | 
 sortBed | complementBed -i stdin -g $work_dir/hisat-stringtie/bedtools/hg38.genome > $work_dir/hisat-stringtie/bedtools/hg38_intergenic.bed  
