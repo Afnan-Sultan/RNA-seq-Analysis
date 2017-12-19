@@ -6,7 +6,7 @@ work_dir="$(pwd)"
 #Download the human genome data we are going to need 
 mkdir hg38_data
 cd $work_dir/hg38_data/
-ftp://ftp.sanger.ac.uk/pub/gencode/Gencode_human/release_27/GRCh38.p10.genome.fa.gz #download the fasta file for indexes generating
+ftp://ftp.sanger.ac.uk/pub/gencode/Gencode_human/release_27/GRCh38.primary_assembly.genome.fa.gz #download the fasta file for indexes generating
 gunzip GRCh38.p10.genome.fa.gz
 
 Wget ftp://ftp.sanger.ac.uk/pub/gencode/Gencode_human/release_27/gencode.v27.annotation.gtf.gz #download transcriptome gtf file to use for comparison 
