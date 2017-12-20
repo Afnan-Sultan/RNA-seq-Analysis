@@ -22,44 +22,38 @@ mkdir $work_dir/hisat-stringtie/paper1/poly_A $work_dir/hisat-stringtie/paper1/r
 mkdir $work_dir/hisat-stringtie/paper1/poly_A/reads_A $work_dir/hisat-stringtie/paper1/poly_A/reads_B $work_dir/hisat-stringtie/paper1/ribo-depleted/reads_A $work_dir/hisat-stringtie/paper1/ribo-depleted/reads_B
 
 # loop over the paired reads from each sample to map them to the reference genome:
-for a in $work_dir/download_data_RNA-seq_TM-AS/RNA-seq_data/*; do
-    x=$(echo "$(basename $a)")
-    for b in $a/reads_*; do
-    y=$(echo "$(basename $b)")
-    arr=($b/*) 
-        for ((i=0; i<${#arr[@]}; i=i+2)); do #excute the loop with base 2
-    s=${arr[$i]} 
-    v=$(echo "$(basename $s)"| sed s/_1.fastq.gz/.sam/) #naming the output fila based on the input file. basename is to get the file name without the path, and sed is to replace the extention. 
-    
-    hisat2 -p 8 --dta -x $work_dir/hg38/hisat_index/hg38 -1 ${arr[$i]} -2 ${arr[$i+1]} -S $work_dir/hisat-stringtie/paper1/$x/$y/$v
+for lib_dir in $work_dir/download_data_RNA-seq_TM-AS/RNA-seq_data/*; do #if lib_dir -d #check if folder 
+    temp1=$(echo "$(basename $lib_dir)")
+    for gb_dir in $lib_dir/reads_*; do
+        temp2=$(echo "$(basename $gb_dir)") 
+        for read in $gb_dir/*_1.fastq.gz ; do #excute the loop for paired read
+            temp3=$(echo "$(basename $s)"| sed s/_1.fastq.gz/.sam/) #naming the output fila based on the input file. basename is to get the file name without the path, and sed is to replace the extention. 
+            input1=$read
+            input2=$(echo "$(basename $s)"| sed s/_1.fastq.gz/_2.fastq.gz/)
+            output=$temp1/temp2/temp3
+            hisat2 -p 8 --dta -x $work_dir/hg38/hisat_index/hg38 -1 $input1 -2 $input2 -S $work_dir/hisat-stringtie/paper1/$output
        done  
     done
 done
 
 # Sort and convert the SAM files to BAM:
-for a in $work_dir/hisat-stringtie/paper1/*; do
-    for b in $a/reads_*; do
-    arr=($b/*.sam)
-    	for ((i=0; i<${#arr[@]}; i++)); do   
-    s=${arr[$i]}
-    v=$(echo "$(basename $s)"| sed s/.sam/.bam/)
-
-    samtools sort -o $b/$v ${arr[$i]}
+for lib_dir in $work_dir/hisat-stringtie/paper1/*; do
+    for gb_dir in $lib_dir/reads_*; do
+    	for sam in $gb_dir/*.sam; do ; do   
+            output=$(echo "$(basename $sam)"| sed s/.sam/.bam/)
+            samtools sort -o $gb_dir/$output ${arr[$i]}
         done
     done      
 done
 
 
 # Assemble transcripts for each sample:
-for a in $work_dir/hisat-stringtie/paper1/*; do
-    for b in $a/reads_*; do
-    arr=($b/*.bam)
-    	for ((i=0; i<${#arr[@]}; i++)); do   
-    s=${arr[$i]}
-    v=$(echo "$(basename $s)"| sed s/.bam/.gtf/)
-    w=$(echo "$(basename $s)"| sed s/.bam//)
-
-    stringtie -o $b/$v -l $w ${arr[$i]}
+for lib_dir in $work_dir/hisat-stringtie/paper1/*; do
+    for gb_dir in $lib_dir/reads_*; do
+    	for bam in &gb_dir/*.bam; do   
+            output=$(echo "$(basename $s)"| sed s/.bam/.gtf/)
+            label=$(echo "$(basename $s)"| sed s/.bam//)
+            stringtie -o $bam/$output -l $label $bam
         done
     done      
 done
@@ -71,13 +65,12 @@ mkdir $work_dir/hisat-stringtie/final_output/paper1
 
 # Merge transcripts from all samples:
 # Merge transcripts from all samples:
-for a in $work_dir/star-scallop/paper1/*; do
-    x=p1_
-    y=$(echo "$(basename $a"_")"
-    for b in $a/reads_*; do
-    z=$(echo "$(basename $b"_")"
-    
-stringtie --merge $b/*.gtf -o $work_dir/hisat-stringtie/final_output/paper1/$x$y$z"stringtie_merged.gtf"
+for lib_dir in $work_dir/star-scallop/paper1/*; do if $lib_dir -d
+    temp1=$(echo "p1_""$(basename $a"_")")
+    for read_dir in $lib_dir/reads_*; do
+        temp2=$(echo "$(basename $read_dir"_stringtie_merged.gtf")") 
+        output=$temp1$temp2
+        stringtie --merge $read_dir/*.gtf -o $work_dir/hisat-stringtie/final_output/paper1/$output
     done
 done
 
@@ -85,9 +78,9 @@ done
 mkdir $work_dir/hisat-stringtie/final_output/paper1/gffcompare 
 
 # Examine how the transcripts compare with the reference annotation
-for dir in $work_dir/hisat-stringtie/final_output/paper1/*.gtf; do 
-    v=$(echo "$(basename $dir)"| sed s/stringtie_merged.gtf//)
-gffcompare -r $work_dir/hg38_data/gencode.v27.annotation.gtf -o $work_dir/hisat-stringtie/final_output/paper1/gffcompare/$v $dir
+for gtf_file in $work_dir/hisat-stringtie/final_output/paper1/*.gtf; do 
+    output=$(echo "$(basename $gtf_file)"| sed s/stringtie_merged.gtf//)
+    gffcompare -r $work_dir/hg38_data/gencode.v27.annotation.gtf -o $work_dir/hisat-stringtie/final_output/paper1/gffcompare/$output $gtf_file
 done
 
 #copy the stats files to final output
@@ -114,16 +107,16 @@ cat $work_dir/hg38_data/gencode.v27.annotation.gtf |
 awk 'BEGIN{OFS="\t";} $3=="gene" {print $1,$4-1,$5}' | 
 sortBed | complementBed -i stdin -g $work_dir/hisat-stringtie/bedtools/hg38.genome > $work_dir/hisat-stringtie/bedtools/hg38_intergenic.bed  
 
-for f in $work_dir/hisat-stringtie/final_output/paper1/*.gtf; do 
-    v=$(echo "$(basename $f)"| sed s/.gtf/.bed/)
-cat $f| 
-awk 'BEGIN{OFS="\t";} {print $1,$4-1,$5}' | 
-sortBed | > $work_dir/hisat-stringtie/bedtools/$v
+for gtf_file in $work_dir/hisat-stringtie/final_output/paper1/*.gtf; do 
+    output=$(echo "$(basename $gtf_file)"| sed s/.gtf/.bed/)
+    cat $gtf_file| 
+    awk 'BEGIN{OFS="\t";} {print $1,$4-1,$5}' | 
+    sortBed | > $work_dir/hisat-stringtie/bedtools/$output
 done
 
-for f in $work_dir/hisat-stringtie/final_output/paper1/bedtools/*.bed; do
-    v=$(echo "$(basename $dir)"| sed s/.bed/_intersect_/)
-intersectBed -a $work_dir/hisat-stringtie/bedtools/hg38_exons.bed -b $f > $work_dir/hisat-stringtie/final_output/paper1/$v"exons.bed"
-intersectBed -a $work_dir/hisat-stringtie/bedtools/hg38_introns.bed -b $f > $work_dir/hisat-stringtie/final_output/paper1/$v"introns.bed"
-intersectBed -a $work_dir/hisat-stringtie/bedtools/hg38_intergenic.bed -b $f > $work_dir/hisat-stringtie/final_output/paper1/$v"intergenic.bed"
+for bed_file in $work_dir/hisat-stringtie/final_output/paper1/bedtools/*.bed; do
+    output=$(echo "$(basename $dir)"| sed s/.bed/_intersect_/)
+intersectBed -a $work_dir/hisat-stringtie/bedtools/hg38_exons.bed -b $bed_file > $work_dir/hisat-stringtie/final_output/paper1/$output"exons.bed"
+intersectBed -a $work_dir/hisat-stringtie/bedtools/hg38_introns.bed -b $bed_file > $work_dir/hisat-stringtie/final_output/paper1/$output"introns.bed"
+intersectBed -a $work_dir/hisat-stringtie/bedtools/hg38_intergenic.bed -b $bed_file > $work_dir/hisat-stringtie/final_output/paper1/$output"intergenic.bed"
 done
