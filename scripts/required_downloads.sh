@@ -4,32 +4,46 @@
 work_dir="$(pwd)"
 
 
-### Download the human genome data we are going to need ###
+### Download the human genome data, generate genome sizes file and generate hisat/star indexes ###
  
-mkdir hg38_data
-cd hg38_data/
-ftp://ftp.sanger.ac.uk/pub/gencode/Gencode_human/release_27/GRCh38.p10.genome.fa.gz #download the fasta file for indexes generating
-gunzip GRCh38.p10.genome.fa.gz
+wget ftp://ftp.sanger.ac.uk/pub/gencode/Gencode_human/release_27/GRCh38.primary_assembly.genome.fa.gz -p $work_dir/hg38_data/ #download the fasta file for indexes generating
+gunzip -c $work_dir/hg38_data/GRCh38.primary_assembly.genome.fa.gz > $work_dir/hg38_data/GRCh38.primary_assembly.genome.fa
 
-Wget ftp://ftp.sanger.ac.uk/pub/gencode/Gencode_human/release_27/gencode.v27.annotation.gtf.gz #download transcriptome gtf file to use for comparison 
-gunzip gencode.v27.annotation.gtf.gz
+Wget ftp://ftp.sanger.ac.uk/pub/gencode/Gencode_human/release_27/gencode.v27.annotation.gtf.gz -p $work_dir/hg38_data/ #download transcriptome gtf file to use for comparison 
+gunzip -c gencode.v27.annotation.gtf.gz > $work_dir/hg38_data/gencode.v27.annotation.gtf
 
-mysql --user=genome --host=genome-mysql.cse.ucsc.edu -A -e \ "select chrom, size from hg38.chromInfo"  > hg38.genome #dowmload genome sizes file
-cd ../
+samtools faidx $work_dir/hg38_data/GRCh38.primary_assembly.genome.fa
+cut -f1,2 $work_dir/hg38_data/GRCh38.primary_assembly.genome.fa.fai > $work_dir/hg38_data/hg38.genome
+
+#hisat genome indexing without gtf annotation
+mkdir $work_dir/hg38_data/hisat_index
+hisat2-build -p 8 $work_dir/hg38_data/GRCh38.primary_assembly.genome.fa $work_dir/hg38_data/hisat_index/hg38
+
+#star genome indexing without gtf annotation
+mkdir $work_dir/hg38_data/star_index
+STAR --runThreadN 1 --runMode genomeGenerate --genomeDir $work_dir/hg38_data/star_index/ --genomeFastaFiles $work_dir/hg38_data/GRCh38.primary_assembly.genome.fa
 
 ### done ###
 
 
-#creating a directory to store the programs at 
-mkdir programs_WorkDir 
-cd programs_WorkDir/
+cd $work_dir/programs_workDir/
+
+### download SRA toolkit required for downloading reads ### 
+wget ftp-trace.ncbi.nlm.nih.gov/sra/sdk/2.8.2-1/sratoolkit.2.8.2-1-ubuntu64.tar.gz
+tar xvzf sratoolkit.2.8.2-1-ubuntu64.tar.gz
+
+#copying the code file -that will download the reads and convert them into fastq- to the PATH
+#sudo cp /home/$username/sratoolkit.2.8.2-1-ubuntu64/bin/fastq-dump /usr/bin/
+
+### done ### 
+
 
 
 ### required downloads for hisat-stringtie pipeline ###
    
 git clone https://github.com/infphilo/hisat2 #installing Hisat2
 
-wget https://github.com/samtools/samtools/releases/download/1.6/samtools-1.6.tar.bz2 -O - | tar xj #downloadeing samtools-1.6
+wget https://github.com/samtools/samtools/releases/download/1.6/samtools-1.6.tar.bz2 #downloadeing samtools-1.6
 tar jxvf samtools-1.6.tar.bz2
 cd samtools-1.6
 make
@@ -102,4 +116,8 @@ tar xvzf STAR-2.5.3a.tar.gz
 #downloading cufflinks to merge scallop GTFs 
 wget cole-trapnell-lab.github.io/cufflinks/assets/downloads/cufflinks-2.2.1.Linux_x86_64.tar.gz
 tar xvzf cufflinks-2.2.1.Linux_x86_64.tar.gz
- ### done ### 
+
+### done ###
+
+cd ../
+ 
