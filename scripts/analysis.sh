@@ -6,7 +6,7 @@ for pipeline in $work_dir/*
     pipeline_name=$(echo "$(basename $pipeline)")
     if [[ $pipeline_name == hisat* || $pipeline_name == star* ]]; then
     for paper_dir in $pipeline_dir/*; do
-        paper_name=$(echo "$(basename $paper_dir")
+        paper_name=$(echo "$(basename $paper_dir)")
         if [[ -d $paper_dir && $paper_dir != $work_dir/$pipeline/final_output ]]; then 
         for gtf_file in $work_dir/hisat-stringtie/final_output/paper1/*.gtf; do 
             output=$(echo "$(basename $gtf_file)"| sed s/stringtie_merged.gtf//)
@@ -22,7 +22,7 @@ for pipeline in $work_dir/*; do
     pipeline_name=$(echo "$(basename $pipeline)")
     if [[ -d $pipeline && $pipeline_name == hisat* || $pipeline_name == star* ]]; then
     for paper_dir in $pipeline_dir/final_output/*; do   if [[ -d $paper_dir ]]; do
-        paper_name=$(echo "$(basename $paper_dir")
+        paper_name=$(echo "$(basename $paper_dir)")
         if [[ -d $paper_dir ]]; then 
         for gtf_file in $paper_dir/*.gtf; do 
             output=$(echo "$(basename $gtf_file)"| sed s/.gtf/.bed/)
@@ -39,7 +39,7 @@ for pipeline in $work_dir/*; do
     pipeline_name=$(echo "$(basename $pipeline)")
     if [[ -d $pipeline && $pipeline_name == hisat* || $pipeline_name == star* ]]; then
     for paper_dir in $pipeline_dir/final_output/*; do
-        paper_name=$(echo "$(basename $paper_dir")
+        paper_name=$(echo "$(basename $paper_dir)")
         if [[ -d $paper_dir ]]; then 
         for bed_file in $paper_dir/*.bed; do 
             output=$(echo "$(basename $dir)"| sed s/.bed/_intersect_/)

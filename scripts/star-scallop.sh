@@ -27,7 +27,8 @@ for a in $work_dir/download_data_RNA-seq_TM-AS/RNA-seq_data/*; do
     arr=($b/*)
         for ((i=0; i<${#arr[@]}; i=i+2)); do #excute the loop with base 2 
     mkdir $work_dir/star-scallop/paper1/$x/$y/read_$i 
- STAR --runThreadN 1 --genomeDir $work_dir/hg38_data/star_index --readFilesIn ${arr[$i]} ${arr[$i+1]} --readFilesCommand zcat --outFileNamePrefix /$work_dir/star-scallop/paper1/$x/$y/read_$i
+STAR --runThreadN 1 --genomeDir $work_dir/hg38_data/star_index --readFilesIn ${arr[$i]} ${arr[$i+1]} --readFilesCommand zcat --outFileNamePrefix /$work_dir/star-scallop/paper1/$x/$y/read_$i 
+
         done  
     done
 done
