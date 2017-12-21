@@ -6,7 +6,8 @@ mkdir $work_dir/hg38_data
 mkdir $work_dir/hg38_data/hisat_index
 mkdir $work_dir/hg38_data/star_index
 mkdir $work_dir/programs_workDir
-bash $work_dir/scripts/required_downloads 
+bash $work_dir/scripts/required_downloads.sh 
+bash $work_dir/scripts/set_path.sh 
 
 ## load the SRA module 
 module load SRAToolkit/2.3.4.2
@@ -51,21 +52,8 @@ bash $work_dir/scripts/star-scallop.sh
 
 
 mkdir $work_dir/bedtools
-#extract exons, introns and intergenic coordinates, convert them to bed, sorting them and storing the result in separate files
-cat $work_dir/hg38_data/gencode.v27.annotation.gtf | 
-awk 'BEGIN{OFS="\t";} $3=="exon" {print $1,$4-1,$5}' | 
-sortBed | 
-mergeBed -i - > $work_dir/bedtools/hg38_exons.bed
+bash $work_dir/scripts/bedtools.sh
 
-cat $work_dir/hg38_data/gencode.v27.annotation.gtf | 
-awk 'BEGIN{OFS="\t";} $3=="gene" {print $1,$4-1,$5}' | 
-sortBed | 
-subtractBed -a stdin -b hg38_exons.bed > $work_dir/bedtools/hg38_introns.bed
-
-cat $work_dir/hg38_data/gencode.v27.annotation.gtf | 
-awk 'BEGIN{OFS="\t";} $3=="gene" {print $1,$4-1,$5}' | 
-sortBed | complementBed -i stdin -g $work_dir/hg38_data/hg38.genome > $work_dir/bedtools/hg38_intergenic.bed
-bash $work_dir/scripts/analysis.sh  
 
  
 

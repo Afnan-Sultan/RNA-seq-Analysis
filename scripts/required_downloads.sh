@@ -29,11 +29,9 @@ STAR --runThreadN 1 --runMode genomeGenerate --genomeDir $work_dir/hg38_data/sta
 cd $work_dir/programs_workDir/
 
 ### download SRA toolkit required for downloading reads ### 
+
 wget ftp-trace.ncbi.nlm.nih.gov/sra/sdk/2.8.2-1/sratoolkit.2.8.2-1-ubuntu64.tar.gz
 tar xvzf sratoolkit.2.8.2-1-ubuntu64.tar.gz
-
-#copying the code file -that will download the reads and convert them into fastq- to the PATH
-#sudo cp /home/$username/sratoolkit.2.8.2-1-ubuntu64/bin/fastq-dump /usr/bin/
 
 ### done ### 
 
