@@ -1,7 +1,7 @@
 # scripts
 
 In this `README.md` file, the workflow of each script will be mentioned breifly.
-  -`required_downloads.sh`
+  - `required_downloads.sh`
 The first script to be excuted is this one, the content of this script is:
     - the first block is downloading the required genomic data for the pipelines and analysis
     - the second block downloads the tool to download RNA-seq reads as well as the tool to trim it
