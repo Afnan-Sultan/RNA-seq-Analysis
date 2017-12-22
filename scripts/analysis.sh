@@ -5,10 +5,9 @@
 for pipeline in $work_dir/*
     pipeline_name=$(echo "$(basename $pipeline)")
     if [[ $pipeline_name == hisat* || $pipeline_name == star* ]]; then
-    for paper_dir in $pipeline_dir/*; do
+    for paper_dir in $pipeline_dir/final_output/*; do
         paper_name=$(echo "$(basename $paper_dir)")
-        if [[ -d $paper_dir && $paper_dir != $work_dir/$pipeline/final_output ]]; then 
-        for gtf_file in $work_dir/hisat-stringtie/final_output/paper1/*.gtf; do 
+        for gtf_file in $paper_dir/*.gtf; do 
             output=$(echo "$(basename $gtf_file)"| sed s/stringtie_merged.gtf//)
             gffcompare -r $work_dir/hg38_data/gencode.v27.annotation.gtf -o $work_dir/$pipeline_name/final_output/$paper_name/$output $gtf_file
         done
@@ -17,7 +16,7 @@ for pipeline in $work_dir/*
     fi
 done
 
-
+#convert merged gtf files to bed files
 for pipeline in $work_dir/*; do
     pipeline_name=$(echo "$(basename $pipeline)")
     if [[ -d $pipeline && $pipeline_name == hisat* || $pipeline_name == star* ]]; then
@@ -35,6 +34,7 @@ for pipeline in $work_dir/*; do
     fi
 done
 
+#applying bedtools analysis
 for pipeline in $work_dir/*; do
     pipeline_name=$(echo "$(basename $pipeline)")
     if [[ -d $pipeline && $pipeline_name == hisat* || $pipeline_name == star* ]]; then

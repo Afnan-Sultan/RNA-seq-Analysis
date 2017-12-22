@@ -1,8 +1,6 @@
 #!/bin/bash
 #downloading and installing the required programms for hisat/stringtie and star/scallop pipelines 
 
-work_dir="$(pwd)"
-
 
 ### Download the human genome data, generate genome sizes file and generate hisat/star indexes ###
  
@@ -14,14 +12,6 @@ gunzip -c gencode.v27.annotation.gtf.gz > $work_dir/hg38_data/gencode.v27.annota
 
 samtools faidx $work_dir/hg38_data/GRCh38.primary_assembly.genome.fa
 cut -f1,2 $work_dir/hg38_data/GRCh38.primary_assembly.genome.fa.fai > $work_dir/hg38_data/hg38.genome
-
-#hisat genome indexing without gtf annotation
-mkdir $work_dir/hg38_data/hisat_index
-hisat2-build -p 8 $work_dir/hg38_data/GRCh38.primary_assembly.genome.fa $work_dir/hg38_data/hisat_index/hg38
-
-#star genome indexing without gtf annotation
-mkdir $work_dir/hg38_data/star_index
-STAR --runThreadN 1 --runMode genomeGenerate --genomeDir $work_dir/hg38_data/star_index/ --genomeFastaFiles $work_dir/hg38_data/GRCh38.primary_assembly.genome.fa
 
 ### done ###
 

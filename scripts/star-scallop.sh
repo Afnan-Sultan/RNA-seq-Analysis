@@ -1,136 +1,111 @@
 #!/bin/bash
 #impeleminting STAR and scallop
 
-work_dir="$(pwd)"
-
-#copying STAR and scallop to $PATH
-sudo cp $work_dir/programs_WorkDir/STAR-2.5.3a/bin/Linux_x86_64/STAR /usr/bin/
-sudo cp $work_dir/programs_WorkDir/scallop/src/scallop /usr/bin/
-
-#create a directory to store all the requiered inputs/outputs inside. we called the file created "star-scallop".
-mkdir $work_dir/start-scallop
-
 #genome indexing without gtf annotation
-mkdir $work_dir/hg38_data/star_index
 STAR --runThreadN 1 --runMode genomeGenerate --genomeDir $work_dir/hg38_data/star_index/ --genomeFastaFiles $work_dir/hg38_data/GRCh38.primary_assembly.genome.fa 
 
-#create directories for paper 1 liberaries/samples 
-mkdir $work_dir/star-scallop/paper1 
-mkdir $work_dir/star-scallop/paper1/poly_A $work_dir/star-scallop/paper1/ribo-depleted
-mkdir $work_dir/star-scallop/paper1/poly_A/reads_A $work_dir/star-scallop/paper1/poly_A/reads_B $work_dir/star-scallop/paper1/ribo-depleted/reads_A $work_dir/star-scallop/paper1/ribo-depleted/reads_B
 
 # loop over the paired reads from each sample to map them to the reference genome:
-for a in $work_dir/download_data_RNA-seq_TM-AS/RNA-seq_data/*; do
-    x=$(echo "$(basename $a)")
-    for b in $a/reads_*; do
-    y=$(echo "$(basename $b)")
-    arr=($b/*)
-        for ((i=0; i<${#arr[@]}; i=i+2)); do #excute the loop with base 2 
-    mkdir $work_dir/star-scallop/paper1/$x/$y/read_$i 
-STAR --runThreadN 1 --genomeDir $work_dir/hg38_data/star_index --readFilesIn ${arr[$i]} ${arr[$i+1]} --readFilesCommand zcat --outFileNamePrefix /$work_dir/star-scallop/paper1/$x/$y/read_$i 
-
+for paper_dir in $work_dir/data/*; do
+    for lib_dir in $paper_dir/* ; do #if lib_dir -d #check if folder
+        lib_name=$(echo "$(basename $lib_dir)")
+        if [ -d $lib_dir && $lib_name == poly* || $lib_dir == ribo* ]; then
+        for gb_dir in $lib_dir/*; do
+            if [ -d $gb_dir ]; then
+            for read in $gb_dir/*_1.fastq.gz ; do #excute the loop for paired read
+                input1=$read
+                input2=$(echo $read | sed s/_1.fastq.gz/_2.fastq.gz/)
+                output_dir_path= $(echo $gb_dir | sed s/data/star-scallop/)
+                outpu_sam_prefix= $(echo "$(basename $read"_")") 
+                STAR --runThreadN 1 --genomeDir /home/afnan/RNA-seq/star-scallop/genome --readFilesIn $input1 $input2 --readFilesCommand zcat --outSAMattributes XS --outFileNamePrefix $output_dir_path/$output_sam_prefix   
+            done
+            fi
         done  
+        fi
     done
+    fi
 done
 
 # Sort and convert the SAM files to BAM:
-for a in $work_dir/star-scallop/paper1/*; do
-    for b in $a/reads_*; do
-        for c in $b/read_*; do
-    v=$(echo "$(basename $c)"| sed s/read//)
-    samtools sort -o $b/Aligned.out$v.bam $c/Aligned.out.sam
+for paper_dir in $work_dir/star-scallop/*; do
+    if [ -d $paper_dir ]; then
+    for lib_dir in $paper_dir/*; do
+        if [ -d $lib_dir ]; then
+        for gb_dir in $lib_dir/*; do
+            if [ -d $gb_dir ]; then
+    	    for sam in $gb_dir/*.sam; do    
+                output=$(echo "$(basename $sam)"| sed s/.sam/.bam/)
+                samtools sort -o $gb_dir/$output $sam
+            done
+            fi
         done
+        fi
     done
+    fi      
 done
 
 # Assemble transcripts for each sample:
 export LD_LIBRARY_PATH=$work_dir/programs_WorkDir/coin-Clp/lib:LD_LIBRARY_PATH #set Clp library to be available for shared libraries
-for a in $work_dir/star-scallop/paper1/*; do
-    for b in $a/reads_*; do
-    arr=($b/*.bam)
-    	for ((i=0; i<${#arr[@]}; i++)); do 
-    s=${arr[$i]}
-    v=$(echo "$(basename $s)"| sed s/.bam/.gtf/)  
-    scallop -i $b/${arr[$i]} -o $b/$v
+for paper_dir in $work_dir/star-scallop/*; do
+    if [ -d $paper_dir ]; then
+    for lib_dir in $paper_dir/*; do
+        if [ -d $lib_dir ]; then
+        for gb_dir in $lib_dir/*; do
+            if [ -d $gb_dir ]; then
+    	    for bam in $gb_dir/*.bam; do    
+                output=$(echo "$(basename $bam)"| sed s/.bam/.gtf/)
+                scallop -i $bam -o $gb_dir/$output
+            done
+            fi
         done
+        fi
     done
+    fi      
 done
+
+#creat final_output folder and create a folder for each paper_data
+mkdir $work_dir/hisat-stringtie/final_output
+for paper_dir in $work_dir/hisat-stringtie/* ;do
+    if [[ -d $paper_dir && $paper_dir != $work_dir/hisat-stringtie/final_output ]]
+    paper_name=$(echo "$(basename $paper_dir)")
+    mkdir $work_dir/hisat-stringtie/final_output/$paper_name 
+    fi
+done
+
 
 #stor gtf paths for each sample in a txt file to pass it to cufflinks
-for a in $work_dir/star-scallop/paper1/*; do
-    for b in $a/reads_*; do
-      for c in $b/*.gtf; do 
-    echo $c 
-      done > $b/gtf_list.txt
+for paper_dir in $work_dir/star-scallop/*; do
+    if [ -d $paper_dir ]; then
+    for lib_dir in $paper_dir/*; do
+        if [ -d $lib_dir ]; then
+        for gb_dir in $lib_dir/*; do
+            if [ -d $gb_dir ]; then       
+            for gtf_file in $gb_dir/*.gtf; do
+                echo $c 
+            done > $gb_dir/gtf_list.txt
+            fi
+        done
+        fi
     done
+    fi
 done
 
-#create a directory to store th merged transcripts, stats and intersection with the differnet genome regions.  
-mkdir $work_dir/star-scallop/final_output
-mkdir $work_dir/star-scallop/final_output/paper1
 
 # Merge transcripts from all samples:
-for a in $work_dir/star-scallop/paper1/*; do
-    x=p1_
-    y=$(echo "$(basename $a"_")"
-    for b in $a/reads_*; do
-    z=$(echo "$(basename $b"_")"
-
-cuffmerge $b/gtf_list.txt -o $b/
-mv $b/merged_asm/merged.gtf $work_dir/star-scallop/final_output/paper1/$x$y$z"scallop_merged.gtf"
+for paper_dir in $work_dir/star-scallop/*; do
+    paper_name=$(echo "$(basename $paper_dir"")")
+    if [ -d $paper_dir ]; then
+    for lib_dir in $paper_dir/*; do
+        if [ -d $lib_dir ]; then
+        for gb_dir in $lib_dir/*; do
+            output=$(echo "$(basename $gb_dir"_scallop_merged.gtf")") 
+            if [ -d $gb_dir ]; then
+            cuffmerge $gb_dir/gtf_list.txt -o $gb_dir
+            cp $gb_dir/merged_asm/merged.gtf $work_dir/star-scallop/final_output/$paper_name/$output
+            fi 
+        done
+        fi
     done
+    fi      
 done
-
-#create a directory to store the final transcript gff stat
-mkdir $work_dir/star-scallope/final_output/paper1/gffcompare 
-
-# Examine how the transcripts compare with the reference annotation
-for dir in $work_dir/star-scallope/final_output/paper1/*.gtf; do 
-    v=$(echo "$(basename $dir)"| sed s/scallop_merged.gtf//)
-gffcompare -r $work_dir/hg38_data/gencode.v27.annotation.gtf -o $work_dir/star-scallope/final_output/paper1/gffcompare/$v $dir
-done
-
-#copy the stats files to final output
-cp $work_dir/star-scallope/final_output/paper1/gffcompare/*.stats $work_dir/star-scallope/final_output/paper1/
-
-#creating a directory to stor bedtools output
-mkdir $work_dir/star-scallope/bedtools/ 
-
-#extract exons, introns and intergenic coordinates, convert them to bed, sorting them and storing the result in separate files
-cat $work_dir/hg38_data/gencode.v27.annotation.gtf | 
-awk 'BEGIN{OFS="\t";} $3=="exon" {print $1,$4-1,$5}' | 
-sortBed | 
-mergeBed -i - > $work_dir/star-scallope/bedtools/hg38_exons.bed
-
-cat $work_dir/hg38_data/gencode.v27.annotation.gtf | 
-awk 'BEGIN{OFS="\t";} $3=="gene" {print $1,$4-1,$5}' | 
-sortBed | 
-subtractBed -a stdin -b hg38_exons.bed > $work_dir/star-scallope/bedtools/hg38_introns.bed
-
-samtools faidx $work_dir/hg38_data/GRCh38.primary_assembly.genome.fa
-cut -f1,2 $work_dir/hg38_data/GRCh38.primary_assembly.genome.fa.fai > $work_dir/star-scallope/bedtools/hg38.genome
-
-cat $work_dir/hg38_data/gencode.v27.annotation.gtf | 
-awk 'BEGIN{OFS="\t";} $3=="gene" {print $1,$4-1,$5}' | 
-sortBed | complementBed -i stdin -g $work_dir/star-scallope/bedtools/hg38.genome > $work_dir/star-scallope/bedtools/hg38_intergenic.bed  
-
-for f in $work_dir/star-scallope/final_output/paper1/*.gtf; do 
-    v=$(echo "$(basename $f)"| sed s/.gtf/.bed/)
-cat $f| 
-awk 'BEGIN{OFS="\t";} {print $1,$4-1,$5}' | 
-sortBed | > $work_dir/star-scallope/bedtools/$v
-done
-
-for f in $work_dir/star-scallope/final_output/paper1/bedtools/*.bed; do
-    v=$(echo "$(basename $dir)"| sed s/.bed/_intersect_/)
-intersectBed -a $work_dir/star-scallope/bedtools/hg38_exons.bed -b $f > $work_dir/star-scallope/final_output/paper1/$v"exons.bed"
-intersectBed -a $work_dir/star-scallope/bedtools/hg38_introns.bed -b $f > $work_dir/star-scallope/final_output/paper1/$v"introns.bed"
-intersectBed -a $work_dir/star-scallope/bedtools/hg38_intergenic.bed -b $f > $work_dir/star-scallope/final_output/paper1/$v"intergenic.bed"
-done
-
-
-
-
-
-
 
