@@ -82,8 +82,11 @@ After calling the analysis.sh script, main.sh will be done and the general struc
 RNA-seq-Analysis
 ├── data 
 ├── hg38_data
-├── programs   
+├── programs 
+├── scripts
 ├── hisat-stringtie 
 ├── star-scallop
-└── bedtools 
+├── bedtools
+├── main.sh
+└── README.md 
 
