@@ -42,7 +42,7 @@ for paper_dir in $work_dir/data/*; do
             done
             fi
             #merge all transcripts from this sample into one gtf file and store at final_output
-            stringtieMerge_output=$(echo "$(basename $sample_dir"_scallop_merged.gtf")")
+            stringtieMerge_output=$(echo "$(basename $sample_dir"_stringtie_merged.gtf")")
             stringtie --merge $output_dir_path/*.gtf -o $work_dir/hisat-stringtie/final_output/$paper_name/$stringtieMerge_output
         done  
         fi
