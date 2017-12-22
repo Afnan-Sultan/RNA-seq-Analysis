@@ -45,7 +45,7 @@ for paper_dir in $work_dir/star-scallop/*; do
 done
 
 # Assemble transcripts for each sample:
-export LD_LIBRARY_PATH=$work_dir/programs_WorkDir/coin-Clp/lib:LD_LIBRARY_PATH #set Clp library to be available for shared libraries
+export LD_LIBRARY_PATH=$work_dir/programs/coin-Clp/lib:LD_LIBRARY_PATH #set Clp library to be available for shared libraries
 for paper_dir in $work_dir/star-scallop/*; do
     if [ -d $paper_dir ]; then
     for lib_dir in $paper_dir/*; do

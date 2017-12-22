@@ -16,7 +16,7 @@ cut -f1,2 $work_dir/hg38_data/GRCh38.primary_assembly.genome.fa.fai > $work_dir/
 ### done ###
 
 
-cd $work_dir/programs_workDir/
+cd $work_dir/programs/
 
 ### required downloads for downloading/trimming reads ### 
 

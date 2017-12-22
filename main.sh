@@ -6,7 +6,7 @@ work_dir="$(pwd)"
 mkdir $work_dir/hg38_data
 mkdir $work_dir/hg38_data/hisat_index
 mkdir $work_dir/hg38_data/star_index
-mkdir $work_dir/programs_workDir
+mkdir $work_dir/programs
 bash $work_dir/scripts/required_downloads.sh   #download/install the needed data and programs
 bash $work_dir/scripts/set_path.sh             #setting the needed binary/scripts to PATH 
 

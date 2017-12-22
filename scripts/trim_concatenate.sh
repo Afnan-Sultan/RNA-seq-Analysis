@@ -9,7 +9,7 @@ for paper_dir in $work_dir/data/*; do
             mkdir $sample_dir/trimmed_reads
             cd $sample_dir/trimmed_reads/
             for read in $sample_dir/*_1.fastq.gz ; do
-                trim_path=$work_dir/programs_workDir/Trimmomatic-0.36 
+                trim_path=$work_dir/programs/Trimmomatic-0.36 
                 input1=$read
                 input2=$(echo $read | sed s/_1.fastq.gz/_2.fastq.gz/)
                 outpu_pe1=$(echo "$(basename $input1)")
