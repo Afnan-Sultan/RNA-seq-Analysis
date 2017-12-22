@@ -18,7 +18,7 @@ done
 
 # loop over the paired reads from each sample to map them to the reference genome:
 for paper_dir in $work_dir/data/*; do
-    if [[ -d $paper_dir && $paper_dir != $work_dir/hisat-stringtie/final_output ]]; then
+    if [ -d $paper_dir ]; then
     for lib_dir in $paper_dir/* ; do #if lib_dir -d #check if folder
         lib_name=$(echo "$(basename $lib_dir)")
         if [ -d $lib_dir && $lib_name == poly* || $lib_dir == ribo* ]; then
@@ -42,7 +42,8 @@ for paper_dir in $work_dir/data/*; do
             done
             fi
             #merge all transcripts from this sample into one gtf file and store at final_output
-            stringtie --merge $output_dir_path/*.gtf -o $work_dir/hisat-stringtie/final_output/$paper_name/$output
+            stringtieMerge_output=$(echo "$(basename $sample_dir"_scallop_merged.gtf")")
+            stringtie --merge $output_dir_path/*.gtf -o $work_dir/hisat-stringtie/final_output/$paper_name/$stringtieMerge_output
         done  
         fi
     done
