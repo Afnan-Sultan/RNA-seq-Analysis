@@ -37,7 +37,7 @@ for paper_dir in $work_dir/data/*; do          #creating the structure for the d
         fi
     done  
 done
-bash $work_dir/scripts/concatenate_trim.sh      #merge and trim reads 
+bash $work_dir/scripts/trim_concatenate.sh      #merge and trim reads 
 
 
 #create hisat-stringtie folser for storing all relevant work done by these programs 

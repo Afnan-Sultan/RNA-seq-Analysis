@@ -18,10 +18,13 @@ cut -f1,2 $work_dir/hg38_data/GRCh38.primary_assembly.genome.fa.fai > $work_dir/
 
 cd $work_dir/programs_workDir/
 
-### download SRA toolkit required for downloading reads ### 
+### required downloads for downloading/trimming reads ### 
 
 wget ftp-trace.ncbi.nlm.nih.gov/sra/sdk/2.8.2-1/sratoolkit.2.8.2-1-ubuntu64.tar.gz
 tar xvzf sratoolkit.2.8.2-1-ubuntu64.tar.gz
+
+wget www.usadellab.org/cms/uploads/supplementary/Trimmomatic/Trimmomatic-0.36.zip
+unzip Trimmomatic-0.36.zip
 
 ### done ### 
 

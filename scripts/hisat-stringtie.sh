@@ -12,7 +12,7 @@ for paper_dir in $work_dir/data/*; do
         if [ -d $lib_dir && $lib_name == poly* || $lib_dir == ribo* ]; then
         for sample_dir in $lib_dir/*; do
             if [ -d $sample_dir ]; then
-            for read in $sample_dir/*_1.fastq.gz ; do #excute the loop for paired read
+            for read in $sample_dir/trimmed_reads/$sample_name_1* ; do #excute the loop for paired read
                 input1=$read
                 input2=$(echo $read | sed s/_1.fastq.gz/_2.fastq.gz/)
                 output_dir_path= $(echo $sample_dir | sed s/data/hisat-stringtie/)
