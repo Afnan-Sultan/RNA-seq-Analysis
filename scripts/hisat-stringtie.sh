@@ -1,7 +1,7 @@
 !/bin/bash
 #implementing HISAT2 and Stringtie 
 
-f
+
 #hisat genome indexing without gtf annotation
 hisat2-build -p 8 $work_dir/hg38_data/GRCh38.primary_assembly.genome.fa $work_dir/hg38_data/hisat_index/hg38
 
