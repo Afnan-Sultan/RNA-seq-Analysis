@@ -1,4 +1,4 @@
-This project is about analyzing different libraries of RNA-seq data and deriving differences between them using different pipelines. The purpose of this project is done by following the usual RNA-seq data analysis.
+This project is about analyzing different libraries of RNA-seq data and deriving differences between them using different pipelines. The purpose of this project is done by following the usual RNA-seq data analysis steps.
   - obtain the reads
   - apply quality control
   - map to reference
