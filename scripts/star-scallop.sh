@@ -20,8 +20,8 @@ for paper_dir in $work_dir/data/*; do
     paper_name=$(echo "$(basename $paper_dir)")
     if [ -d $sample_dir ]; then
     for lib_dir in $paper_dir/* ; do #if lib_dir -d #check if folder
-        lib_name=$(echo "$(basename $lib_dir)")
         if [[ -d $lib_dir && $lib_name == poly* || $lib_dir == ribo* ]]; then
+        lib_name=$(echo "$(basename $lib_dir)")
         for sample_dir in $lib_dir/*; do
             if [ -d $sample_dir ]; then
             for read in $sample_dir/trimmed_reads/$sample_name_1* ; do #excute the loop for paired read
