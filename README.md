@@ -8,18 +8,18 @@ This project is about analyzing different libraries of RNA-seq data and deriving
 The `main.sh` script is orchesterating the execution of these steps using the different scripts inside `scripts` folder. The work of `main.sh` and the susequent scripts could be easily summaraized as follows:
 
   - `main.sh` firstly generates some folders to stor the requiered data/programs at.
-  - it would be convenient the `main.sh` will then call `required_downloads.sh` to excute that action. For `required_downloads.sh` itself, the work goes as follows
+  - it would be convenient that `main.sh` will then call `required_downloads.sh` to excute that action. For `required_downloads.sh` itself, the work goes as follows
     - firstly, the script downloads and decompress the human geome. human transcriptome and genome sizes file.
     - the next step is downloading and istalling the required programms for downloading, quality control, aligning, assembeling and analyzing the RNA-seq reads.
-  - `set_bath.sh` is then called to copy working bins, ibs or any needed file to the PATH environment to make work easier.
-  - `main.sh` then generates the general structure for `data` folder, which primarily includes folders containing the accession lists for downloading the reads. The folder structure within data folder is as follows:
+  - `set_bath.sh` is then called to copy working bins, libs or any needed file to the PATH environment, to make work easier.
+  - `main.sh` then generates the general structure for `data` folder, which primarily includes folders containing the accession lists for downloading the reads. The folder structure within `data` folder is as follows:
   
 ```
 data
-├── $paper_1 (the paper where the data came from)
-│   ├── poly_A (a folder to contain the poly_A reads)
-│   │   ├── acc_lists
-│   │   │   └── lists.txt (txt files containing accession numbers needed for downloawding)
+├── $paper_1 (the name of the paper where the data came from)
+│   ├── acc_lists (different lists for different samples)
+│   │   └── lists.txt (txt files containing accession numbers needed for downloawding reads)
+│   ├── poly_A (liberary name; a folder to contain the poly_A reads)
 │   │   ├── $sample_a (specific tissue reads from this library)
 │   │   │   ├── reads (fastq.gz files)
 │   │   │   └── trimmed_reads (the reads after applying quality controling upon)
@@ -27,7 +27,7 @@ data
 │   │   ├── .
 │   │   ├── .
 │   │   └──$sample_x
-│   └── ribo_depleted (a folder to contain the ribo_depleted reads)
+│   └── ribo_depleted (liberary name; a folder to contain the ribo_depleted reads)
 │       ├── sample_a (specific tissue reads from this library)
 │       │   ├── reads (fastq.gz files)
 │       │   └── trimmed_reads (the reads after applying quality controling upon)
@@ -39,7 +39,7 @@ data
 ├── .     
 └── $paper_n     
 ```
-  - after downloading and refining the data, the mapping/assembeling take place with two different pipelines by calling `hisat-stringtie.sh` and `star-scallop.sh` respectively.
+  - after downloading and refining the data, the mapping/assembeling takes place with two different pipelines by calling `hisat-stringtie.sh` and `star-scallop.sh` respectively.
     - the two pipelines run the mapping step using hisat/star which results in a `.sam` file
     - `.sam` files are then sorted and converted into `.bam` files
     - the `.bam` files are used by the assembeler -stringtie/scallop- to generate `.gtf` files
@@ -72,11 +72,11 @@ hisat-stringtie(star-scallo)
     ├── .     
     └── $paper_n 
 ```
-  - the additional folder in this structure is the `final_output` folder. This folder contains the final and most important outputs, whic are mostly generated after calling `analysis.sh` script from the `main.sh`
+  - the additional folder in this structure is the `final_output` folder. This folder contains the final and most important outputs, which are mostly generated after calling `analysis.sh` script from the `main.sh`
   - `analysis.sh` function is
     - converting the merged `.gtf` file into `.bed` file
-    - applying gffcompare on each merged gtf with refrence trancriptom and generating `.stats` files.
-    - applying bedtools on the converted `.bed` file with the generated `.bed` files in the bedtools folder to generate intersection with different with different genomic regions.
+    - applying gffcompare on each merged gtf with refrence trancriptome and generating `.stats` files.
+    - applying bedtools on the converted `.bed` file with the generated `.bed` files in the bedtools folder, to generate intersection with different genomic regions.
 
 After calling the `analysis.sh` script, `main.sh` will be done and the general structure of the repository will be as follows.
 
