@@ -15,33 +15,43 @@ bash $work_dir/scripts/set_path.sh             #setting the needed binary/script
 #download the RNA-seq data 
 module load SRAToolkit/2.3.4.2 		       #if you already have it	
 
-for paper_dir in $work_dir/data/*; do          #creating the structure for the downloaded data
-    if [ -d $paper_dir ]; then
-       mkdir $paper_dir/poly_A
-       mkdir $paper_dir/ribo_depleted
-    fi
+## define a list of paper directories
+for paper_dir in $work_dir/data/*; do if [ -d $paper_dir ];then
+  echo $paper_dir;
+fi;done > paper_dirs.txt      
+
+## download the data
+while read paper_dir; do          
+    ##creating the structure for the downloaded data
+    mkdir $paper_dir/poly_A
+    mkdir $paper_dir/ribo_depleted
+    ##download the data according to the accession list
     paper_name=$(echo "$(basename $paper_dir)")
     for acc_list in $work_dir/data/$paper_name/acc_lists/*.txt; do 
         if [[ $(echo "$(basename $acc_list)") == poly* || $(echo "$(basename $acc_list)") == ribo* ]]; then
            sample_name=$(echo "$(basename $acc_list)" | sed s/.txt//)
            if [[ $(echo "$(basename $acc_list)") == poly* ]]; then
-              mkdir $paper_dir/poly_A/$sample_name
-              cat $acc_list| 
-	      while read acc_num ; do 
-                    fastq-dump --outdir $paper_dir/poly_A/$sample_name --gzip --split-files $acc_num       #download and convert data into fastq.gz format
-              done
+             sample_dir=$paper_dir/poly_A/$sample_name;
            else
-              mkdir $paper_dir/ribo_depleted/$sample_name
-              cat $acc_list| 
-              while read acc_num ; do 
-                    fastq-dump --outdir $paper_dir/ribo_depleted/$sample_name --gzip --split-files $acc_num       #download and convert data into fastq.gz format
-             done         
-           fi
+             sample_dir=$paper_dir/ribo_depleted/$sample_name;
+           fi   
+           mkdir $sample_dir
+           cat $acc_list| 
+	   while read acc_num ; do 
+             ##download and convert data into fastq.gz format
+             echo $acc_num $sample_dir;
+             fastq-dump --outdir $sample_dir --gzip --split-files $acc_num   
+           done
         fi
     done  
-done
-bash $work_dir/scripts/trim_concatenate.sh      #merge and trim reads
+done < paper_dirs.txt
 
+##merge and trim reads
+#prog_path=$work_dir/programs/Trimmomatic-0.36
+prog_path="HPC" ## incase we use MSU HPC
+while read paper_dir;do
+  bash $work_dir/scripts/trim_concatenate.sh "$paper_dir" "prog_path" 
+done < paper_dirs.txt
 
 
 #create hisat-stringtie folder for storing all relevant work done by these programs 

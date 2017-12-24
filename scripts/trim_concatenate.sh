@@ -1,5 +1,13 @@
 #!/bin/bash
 
+paper_dir="$1"
+prog_path="$2"
+
+if [ "$prog_path" == "HPC" ];then
+ module load Trimmomatic/0.33 
+else 
+ trim=$work_dir/programs/Trimmomatic-0.36
+fi
 	
 #apply trimming and then mrging for the reads
 for paper_dir in $work_dir/data/*; do                                               #loop over the papers
