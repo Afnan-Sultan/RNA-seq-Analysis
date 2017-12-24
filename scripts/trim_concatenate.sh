@@ -19,19 +19,21 @@ for paper_dir in $work_dir/data/*; do                                           
                 output_pe1=$(echo "$(basename $input1)")
                 output_pe2=$(echo "$(basename $input2)")
                 output_se1=$(echo "$(basename $read)" | sed s/_1.fastq.gz/_fSE.fastq/)
-                output_se2=$(echo "$(basename $read)" | sed s/_2.fastq.gz/_rSE.fastq/)
+                output_se2=$(echo "$(basename $read)" | sed s/_1.fastq.gz/_rSE.fastq/)
                 
-                use trimmomatic to perform trimming on the reads
+                #use trimmomatic to perform trimming on the reads
                 java -jar $trim/trimmomatic-0.36.jar PE -phred33 $input1 $input2 $output_pe1 $output_se1 $output_pe2 $output_se2 ILLUMINACLIP:$trim/adapters/TruSeq2-PE.fa:2:30:10 SLIDINGWINDOW:4:2 MINLEN:20 
             done
             cd $work_dir/
             
+	    touch $sample_name"_1.fastq.gz 
+	    touch $sample_name"_2.fastq.gz 
             for trimmed_read in $sample_dir/trimmed_reads/*; do              #loop over the trimmed reads 
                 read_name=$(echo "$(basename $trimmed_read)")
                 if [[ $read_name == *_1.fastq.gz ]]; then
-                   cat $trimmed_read > $sample_dir/trimmed_reads/$sample_name"_1.fastq.gz"   #store the forward reads in one file
+                   cat $trimmed_read >> $sample_dir/trimmed_reads/$sample_name"_1.fastq.gz"   #store the forward reads in one file
                 elif [[ $read_name == *_2.fastq.gz ]]; then 
-                   cat $trimmed_read > $sample_dir/trimmed_reads/$sample_name"_2.fastq.gz"   #store the reverse reads in one file
+                   cat $trimmed_read >> $sample_dir/trimmed_reads/$sample_name"_2.fastq.gz"   #store the reverse reads in one file
                 fi
             done
             fi
