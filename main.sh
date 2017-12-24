@@ -40,11 +40,11 @@ while read paper_dir; do
 	   while read acc_num ; do 
              ##download and convert data into fastq.gz format
              echo $acc_num $sample_dir;
-             #fastq-dump --outdir $sample_dir --gzip --split-files $acc_num   
+             fastq-dump --outdir $sample_dir --gzip --split-files $acc_num   
            done
         fi
     done  
-done < paper_dirs.txt &> test
+done < paper_dirs.txt
 
 ##merge and trim reads
 #prog_path=$work_dir/programs/Trimmomatic-0.36
