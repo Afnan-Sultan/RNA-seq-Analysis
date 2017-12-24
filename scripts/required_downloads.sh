@@ -4,10 +4,10 @@
 
 ### Download the human genome data, generate genome sizes file and generate hisat/star indexes ###
  
-wget ftp://ftp.sanger.ac.uk/pub/gencode/Gencode_human/release_27/GRCh38.primary_assembly.genome.fa.gz -p $work_dir/hg38_data/ #download the fasta file for indexes generating
+wget ftp://ftp.sanger.ac.uk/pub/gencode/Gencode_human/release_27/GRCh38.primary_assembly.genome.fa.gz -P $work_dir/hg38_data/ #download the fasta file for indexes generating
 gunzip -c $work_dir/hg38_data/GRCh38.primary_assembly.genome.fa.gz > $work_dir/hg38_data/GRCh38.primary_assembly.genome.fa
 
-Wget ftp://ftp.sanger.ac.uk/pub/gencode/Gencode_human/release_27/gencode.v27.annotation.gtf.gz -p $work_dir/hg38_data/ #download transcriptome gtf file to use for comparison 
+Wget ftp://ftp.sanger.ac.uk/pub/gencode/Gencode_human/release_27/gencode.v27.annotation.gtf.gz -P $work_dir/hg38_data/ #download transcriptome gtf file to use for comparison 
 gunzip -c gencode.v27.annotation.gtf.gz > $work_dir/hg38_data/gencode.v27.annotation.gtf
 
 samtools faidx $work_dir/hg38_data/GRCh38.primary_assembly.genome.fa
