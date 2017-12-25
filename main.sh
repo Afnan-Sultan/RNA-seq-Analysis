@@ -1,6 +1,7 @@
 #!/bin/bash
 
 work_dir="$(pwd)"
+echo $work_dir
 
 
 #create the directories for storing human genome relative data, and a directory for stroing the requiered programs
@@ -29,28 +30,36 @@ while read paper_dir; do
     paper_name=$(echo "$(basename $paper_dir)")
     for acc_list in $work_dir/data/$paper_name/acc_lists/*.txt; do 
         if [[ $(echo "$(basename $acc_list)") == poly* || $(echo "$(basename $acc_list)") == ribo* ]]; then
-           sample_name=$(echo "$(basename $acc_list)" | sed s/.txt//)
+           tissue_name=$(echo "$(basename $acc_list)" | sed s/.txt//)
            if [[ $(echo "$(basename $acc_list)") == poly* ]]; then
-             sample_dir=$paper_dir/poly_A/$sample_name;
+             tissue_dir=$paper_dir/poly_A/$tissue_name;
            else
-             sample_dir=$paper_dir/ribo_depleted/$sample_name;
+             tissue_dir=$paper_dir/ribo_depleted/$tissue_name;
            fi   
-           mkdir $sample_dir
+           mkdir $tissue_dir
+	   mkdir $tissue_dir/fastq
            cat $acc_list| 
 	   while read acc_num ; do 
              ##download and convert data into fastq.gz format
-             echo $acc_num $sample_dir;
-             fastq-dump --outdir $sample_dir --gzip --split-files $acc_num   
+             echo $acc_num $tissue_dir;
+             fastq-dump -X 10 --outdir $tissue_dir/fastq --gzip --split-files $acc_num   
            done
         fi
     done  
 done < paper_dirs.txt
 
-##merge and trim reads
-#prog_path=$work_dir/programs/Trimmomatic-0.36
-prog_path="HPC" ## incase we use MSU HPC
+
+##merge reads coming from one sample
 while read paper_dir;do
-  bash $work_dir/scripts/trim_concatenate.sh "$paper_dir" "prog_path" 
+  bash $work_dir/scripts/concatenate.sh "$paper_dir"  
+done < paper_dirs.txt
+
+
+##trim merged reads
+#prog_path=$work_dir/programs/Trimmomatic-0.36
+prog_path="HPC" ## in case we use MSU HPC
+while read paper_dir;do
+  bash $work_dir/scripts/trim.sh "$paper_dir" "$prog_path" 
 done < paper_dirs.txt
 
 

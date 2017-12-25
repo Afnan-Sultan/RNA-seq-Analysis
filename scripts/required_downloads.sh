@@ -25,6 +25,7 @@ tar xvzf sratoolkit.2.8.2-1-ubuntu64.tar.gz
 
 wget www.usadellab.org/cms/uploads/supplementary/Trimmomatic/Trimmomatic-0.36.zip
 unzip Trimmomatic-0.36.zip
+mv Trimmomatic-0.36.zip/trimmomatic-0.36.jar Trimmomatic-0.36.zip/trimmomatic
 
 ### done ### 
 
