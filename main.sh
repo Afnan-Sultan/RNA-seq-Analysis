@@ -76,8 +76,8 @@ for pipeline in $work_dir/*; do
     if [[ -d $pipeline && ($pipelne_name == hisat* || $pipelne_name == star*) ]]; then
        cd $work_dir/data && find -type d -not -name "acc_lists" -not -name "fastq" -not -name "merged_reads" -not -name "trimmed_merged_reads" -exec mkdir -p $pipeline/{} \; 
        cd $work_dir
+       echo $pipeline
     fi
-    echo $pipeline
 done > pipeline.txt
 
 
