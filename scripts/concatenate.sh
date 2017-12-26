@@ -2,7 +2,6 @@
 
 paper_dir="$1"
 
-
 for lib_dir in $paper_dir/* ; do
     lib_name=$(echo "$(basename $lib_dir)")                                              #loop over libraries 
     if [[ -d $lib_dir && $lib_name == poly* || $lib_name == ribo* ]]; then
@@ -11,7 +10,7 @@ for lib_dir in $paper_dir/* ; do
            tissue_name=$(echo "$(basename $tissue_dir)")
            if [ -d $tissue_dir ]; then
 	      mkdir $tissue_dir/merged_reads
-	      for read in $tissue_dir/fastq/*; do
+	      for read in $tissue_dir/fastq/*_1.fastq.gz; do
 	          temp=$(echo "$(basename $read)")
 		  read_name=${temp:0:-11}
                   cat $paper_dir/acc_lists/SraRunTable.txt |

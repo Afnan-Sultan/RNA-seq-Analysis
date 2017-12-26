@@ -16,21 +16,21 @@ for lib_dir in $paper_dir/* ; do
     for tissue_dir in $lib_dir/*; do                                            #loop over samples
       tissue_name=$(echo "$(basename $tissue_dir)")
       if [ -d $tissue_dir ]; then
-         for sample in $tissue_dir/merged_reads/*;do
+         for sample in $tissue_dir/merged_reads/*_1.fastq.gz;do
              mkdir $tissue_dir/trimmed_merged_reads                                      #create folder to stor trimmed reads
              cd $tissue_dir/trimmed_merged_reads/
                  input1=$sample
                  input2=$(echo $sample | sed s/_1.fastq.gz/_2.fastq.gz/)
+		 zcat $input2
                  output_pe1=$(echo "$(basename $input1)")
                  output_pe2=$(echo "$(basename $input2)")
                  output_se1=$(echo "$(basename $sample)" | sed s/_1.fastq.gz/_fSE.fastq/)
                  output_se2=$(echo "$(basename $sample)" | sed s/_1.fastq.gz/_rSE.fastq/)
                 
                  ##use trimmomatic to perform trimming on the reads
-                 java -jar "$TRIM/trimmomatic" PE -phred33 $input1 $input2 $output_pe1 $output_se1 $output_pe2 $output_se2 ILLUMINACLIP:$TRIM/adapters/TruSeq2-PE.fa:2:30:10 SLIDINGWINDOW:4:2 MINLEN:20 
-break
-        done
-      fi
+                 java -jar "$TRIM/trimmomatic" PE -phred33 $input1 $input2 $output_pe1 $output_se1 $output_pe2 $output_se2 ILLUMINACLIP:$TRIM/adapters/TruSeq2-PE.fa:2:30:10 SLIDINGWINDOW:4:2 MINLEN:20
+         done
+       fi
     done  
   fi
 done
