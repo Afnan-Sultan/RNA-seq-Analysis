@@ -41,7 +41,7 @@ while read paper_dir; do
 	        while read acc_num ; do 
                       ##download and convert data into fastq.gz format
                       echo $acc_num $tissue_dir;
-                      fastq-dump -X 10 --outdir $tissue_dir/fastq --gzip --split-files $acc_num   
+                      fastq-dump --outdir $tissue_dir/fastq --gzip --split-files $acc_num   
                 done
           fi
       done  
