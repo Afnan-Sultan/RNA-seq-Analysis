@@ -8,9 +8,9 @@ echo $tissue_dir
 
 
 #stor gtf paths for each sample in a txt file to pass it to cufflinks
-#for gtf in $tissue_dir/*.gtf; do
-#    echo $gtf 
-#done > $tissue_dir/gtf_list.txt
+for gtf in $tissue_dir/*.gtf; do
+    echo $gtf 
+done > $tissue_dir/gtf_list.txt
 
 cd $tissue_dir
 cuffMerge_output=$(echo "$(basename $tissue_dir"_scallop_merged.gtf")")
