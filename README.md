@@ -20,21 +20,23 @@ data
 │   ├── acc_lists (different lists for different samples)
 │   │   └── lists.txt (txt files containing accession numbers needed for downloawding reads)
 │   ├── poly_A (liberary name; a folder to contain the poly_A reads)
-│   │   ├── $sample_a (specific tissue reads from this library)
-│   │   │   ├── reads (fastq.gz files)
+│   │   ├── poly_tissueA (specific tissue reads from this library)
+│   │   │   ├── fastq (fastq.gz files)
+|   |   |   ├── merged_reads (the reads after merging the replicates)
 │   │   │   └── trimmed_reads (the reads after applying quality controling upon)
-│   │   ├── $sample_b 
+│   │   ├── poly_tissueB 
 │   │   ├── .
 │   │   ├── .
-│   │   └──$sample_x
+│   │   └── poly_tissueX
 │   └── ribo_depleted (liberary name; a folder to contain the ribo_depleted reads)
-│       ├── sample_a (specific tissue reads from this library)
-│       │   ├── reads (fastq.gz files)
+│       ├── ribo_tissueA (specific tissue reads from this library)
+│       │   ├── fastq (fastq.gz files)
+|   |   |   ├── merged_reads (the reads after merging the replicates)
 │       │   └── trimmed_reads (the reads after applying quality controling upon)
-│       ├── $sample_b 
+│       ├── ribo_tissueB 
 │       ├── .
 │       ├── .
-│       └──$sample_x
+│       └── ribo_tissueX
 ├── .     
 ├── .     
 └── $paper_n     
