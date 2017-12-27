@@ -2,25 +2,23 @@
 
 work_dir="$(pwd)"
 
-
 #create the directories for storing human genome relative data, and a directory for stroing the requiered programs
-mkdir $work_dir/hg38_data
-mkdir $work_dir/hg38_data/hisat_index
-mkdir $work_dir/hg38_data/star_index
 mkdir $work_dir/programs
-bash $work_dir/scripts/required_downloads.sh   #download/install the needed data and programs
-bash $work_dir/scripts/set_path.sh             #setting the needed binary/scripts to PATH 
+bash $work_dir/scripts/download_programs.sh "$work_dir"   #download/install the needed programs
+bash $work_dir/scripts/set_path.sh "$work_dir"            #setting the needed binary/scripts to PATH 
 
-
-#download the RNA-seq data 
-module load SRAToolkit/2.3.4.2 		       #if you already have it	
+#download human genome resources and generate indexes for HISAT and STAR
+mkdir $work_dir/hg38_data
+index_dir_path=$work_dir/hg38_data/
+bash $work_dir/scripts/genomeResources.sh "$index_dir_path" "HPC" 
 
 ## define a list of paper directories inside data file
 for paper_dir in $work_dir/data/*; do if [ -d $paper_dir ];then
   echo $paper_dir;
 fi;done > paper_dirs.txt      
 
-## download the data
+#download the RNA-seq data 
+module load SRAToolkit/2.3.4.2                 #if you already have it  
 while read paper_dir; do          
       ##creating the structure for the downloaded data
       mkdir $paper_dir/poly_A
@@ -47,12 +45,10 @@ while read paper_dir; do
       done  
 done < paper_dirs.txt
 
-
 ##merge reads coming from one sample
 while read paper_dir;do
       bash $work_dir/scripts/concatenate.sh "$paper_dir"  
 done < paper_dirs.txt
-
 
 ##trim merged reads
 #prog_path=$work_dir/programs/Trimmomatic-0.36
@@ -60,12 +56,6 @@ prog_path="HPC" ## in case we use MSU HPC
 while read paper_dir;do
       bash $work_dir/scripts/trim.sh "$paper_dir" "$prog_path" 
 done < paper_dirs.txt
-
-
-index_dir_path=$work_dir/hg38_data/
-#generate indexes for HISAT and STAR
-bash scripts/generate_index.sh "$index_dir_path"
-
 
 #create hisat-stringtie folder for storing all relevant work done by these programs 
 mkdir $work_dir/hisat-stringtie $work_dir/star-scallop
