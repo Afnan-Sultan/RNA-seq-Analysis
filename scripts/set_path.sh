@@ -1,4 +1,5 @@
 #!/bin/bash
+work_dir="$1"
 
 #copying the code file -that will download the reads and convert them into fastq- to the PATH
 sudo cp $work_dir/programs/sratoolkit.2.8.2-1-ubuntu64/bin/fastq-dump /usr/bin/
