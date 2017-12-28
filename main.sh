@@ -29,18 +29,18 @@ while read paper_dir; do
           if [[ $(echo "$(basename $acc_list)") == poly* || $(echo "$(basename $acc_list)") == ribo* ]]; then
              tissue_name=$(echo "$(basename $acc_list)" | sed s/.txt//)
              if [[ $(echo "$(basename $acc_list)") == poly* ]]; then
-                tissue_dir=$paper_dir/poly_A/$tissue_name;
+                tissue_dir=poly_A/$tissue_name;
              else
-                tissue_dir=$paper_dir/ribo_depleted/$tissue_name;
+                tissue_dir=ribo_depleted/$tissue_name;
              fi   
-                mkdir $tissue_dir
-	        mkdir $tissue_dir/fastq
-                cat $acc_list| 
-	        while read acc_num ; do 
-                      ##download and convert data into fastq.gz format
-                      echo $acc_num $tissue_dir;
-                      fastq-dump --outdir $tissue_dir/fastq --gzip --split-files $acc_num   
-                done
+             mkdir -p $paper_dir/$tissue_dir/fastq
+             echo $tissue_dir >> $paper_dir/tissues.txt;
+             cat $acc_list| 
+	     while read acc_num ; do 
+                ##download and convert data into fastq.gz format
+                echo $acc_num $paper_dir/$tissue_dir;
+                fastq-dump --outdir $paper_dir/$tissue_dir/fastq --gzip --split-files $acc_num   
+             done
           fi
       done  
 done < paper_dirs.txt
@@ -57,48 +57,49 @@ while read paper_dir;do
       bash $work_dir/scripts/trim.sh "$paper_dir" "$prog_path" 
 done < paper_dirs.txt
 
-#create hisat-stringtie folder for storing all relevant work done by these programs 
-mkdir $work_dir/hisat-stringtie $work_dir/star-scallop
+##create hisat-stringtie folder for storing all relevant work done by these programs 
+#mkdir $work_dir/hisat-stringtie $work_dir/star-scallop
 
-#copy the same folder structure from data folder into hisat-stringtie folder
-for pipeline in $work_dir/*; do
-    pipelne_name=$(echo "$(basename $pipeline)")
-    if [[ -d $pipeline && ($pipelne_name == hisat* || $pipelne_name == star*) ]]; then
-       cd $work_dir/data && find -type d -not -name "acc_lists" -not -name "fastq" -not -name "merged_reads" -not -name "trimmed_merged_reads" -exec mkdir -p $pipeline/{} \; 
-       cd $work_dir
-       echo $pipeline
-    fi
-done > pipeline.txt
+##copy the same folder structure from data folder into hisat-stringtie folder
+#for pipeline in $work_dir/*; do
+#    pipeline_name=$(echo "$(basename $pipeline)")
+#    if [[ -d $pipeline && ($pipeline_name == hisat* || $pipeline_name == star*) ]]; then
+#       cd $work_dir/data && find -type d -not -name "acc_lists" -not -name "fastq" -not -name "merged_reads" -not -name "trimmed_reads" -exec mkdir -p $pipeline/{} \; 
+#       cd $work_dir
+#       echo $pipeline
+#    fi
+#done > pipeline.txt
 
 
-## define a list of tissues directories inside each pipeline to pass for the assemblers
-while read pipeline; do
-      if [[ $pipeline_name == hisat* ]]; then
-         list=hisat_tissue_dirs
-      else
-         list=star_tissue_dirs
-      fi          
-      for paper_dir in $pipeline/*; do
-	  if [ -d $paper_dir ]; then
-	     for lib_dir in $paper_dir/*; do
-		 if [ -d $lib_dir ]; then
-		    for tissue_dir in $lib_dir/*; do
-	   		if [ -d $tissue_dir ];then
-	     		   echo $tissue_dir
-	                fi  	
-                    done 
-		  fi
-	     done > $list.txt
- 	   fi
-       done
-       fi
-done < pipeline.txt 
+### define a list of tissues directories inside each pipeline to pass for the assemblers
+#while read pipeline; do
+#      pipeline_name=$(echo "$(basename $pipeline)")
+#      if [[ $pipeline_name == hisat* ]]; then
+#         list=hisat_tissue_dirs
+#      else
+#         list=star_tissue_dirs
+#      fi          
+#      for paper_dir in $pipeline/*; do
+#	  if [ -d $paper_dir ]; then
+#	     for lib_dir in $paper_dir/*; do
+#		 if [ -d $lib_dir ]; then
+#		    for tissue_dir in $lib_dir/*; do
+#	   		if [ -d $tissue_dir ];then
+#	     		   echo $tissue_dir
+#	                fi  	
+#                    done 
+#		  fi
+#	     done
+# 	   fi
+#       done > $list.txt
+#done < pipeline.txt 
 
 
 #map the trimmed merged reads using hisat
+mkdir $work_dir/hisat-stringtie
 hisat_dir=$work_dir/hisat-stringtie
 while read paper_dir;do
-      bash $work_dir/scripts/hisat.sh "$paper_dir" "$hisat_dir" "$index_dir_path"  
+      bash $work_dir/scripts/hisat.sh "$paper_dir" "$hisat_dir" "$index_dir_path" "HPC"
 done < paper_dirs.txt 
 
 #sort, convert to bam and assemple the sam files using stringtie
