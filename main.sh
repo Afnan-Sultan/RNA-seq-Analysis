@@ -102,22 +102,32 @@ while read paper_dir;do
       bash $work_dir/scripts/hisat.sh "$paper_dir" "$hisat_dir" "$index_dir_path" "HPC"
 done < paper_dirs.txt 
 
-#sort, convert to bam and assemple the sam files using stringtie
-while read tissue_dir;do
-      bash $work_dir/scripts/stringtie.sh "$tissue_dir"  
-done < hisat_tissue_dirs.txt  
-
-
-star_dir=$work_dir/star-scallop
+#sort, convert to bam 
 while read paper_dir;do
-      bash $work_dir/scripts/star.sh "$paper_dir" "$star_dir" "$index_dir_path"  
+      bash $work_dir/scripts/getBAM.sh "$paper_dir" "$hisat_dir" "HPC"
 done < paper_dirs.txt
 
+#assemple the sam files using stringtie
+while read paper_dir;do
+      bash $work_dir/scripts/stringtie.sh "$paper_dir" "$hisat_dir" "HPC"
+done < paper_dirs.txt
 
-#sort, convert to bam and assemple the sam files using scallop
+#map the trimmed merged reads using STAR
+mkdir $work_dir/star-scallop
+star_dir=$work_dir/star-scallop
+while read paper_dir;do
+      bash $work_dir/scripts/star.sh "$paper_dir" "$star_dir" "$index_dir_path"  "HPC"
+done < paper_dirs.txt
+
+#sort, convert to bam 
+while read paper_dir;do
+      bash $work_dir/scripts/getBAM.sh "$paper_dir" "$star_dir" "HPC"
+done < paper_dirs.txt
+
+#assemple the sam files using scallop
 prog_path=$work_dir/programs/coin-Clp
 while read tissue_dir;do
-      bash $work_dir/scripts/scallop.sh "$tissue_dir" "$prog_path"  
+      bash $work_dir/scripts/scallop.sh "$paper_dir" "$star_dir" "HPC" ## use "$prog_path" instead of "HPC" for local analysis
 done < star_tissue_dirs.txt  
 
 
