@@ -94,7 +94,7 @@ done < paper_dirs.txt
 #       done > $list.txt
 #done < pipeline.txt 
 
-
+### Hisat-stringtie pipeline
 #map the trimmed merged reads using hisat
 mkdir $work_dir/hisat-stringtie
 hisat_dir=$work_dir/hisat-stringtie
@@ -112,6 +112,12 @@ while read paper_dir;do
       bash $work_dir/scripts/stringtie.sh "$paper_dir" "$hisat_dir" "HPC"
 done < paper_dirs.txt
 
+#merge the assembled gtf files
+while read paper_dir;do
+      bash $work_dir/scripts/stringtie_merge.sh "$paper_dir" "$hisat_dir" "HPC"
+done < paper_dirs.txt
+#############################
+### STAR-Scallop pipeline
 #map the trimmed merged reads using STAR
 mkdir $work_dir/star-scallop
 star_dir=$work_dir/star-scallop
@@ -130,38 +136,42 @@ while read paper_dir;do
       bash $work_dir/scripts/scallop.sh "$paper_dir" "$star_dir" "HPC" ## use "$prog_path" instead of "HPC" for local analysis
 done < paper_dirs.txt
 
-
+#merge the assembled gtf files
+while read paper_dir;do
+      bash $work_dir/scripts/cuffmerge.sh "$paper_dir" "$star_dir" "HPC"
+done < paper_dirs.txt
+#############################
 #creat final output folder to store the most important outputs from the pipeline and the analysiss
-while read pipeline; do
-      mkdir $pipeline/final_output
-      for paper_dir in $pipeline/*; do
-          if [[ -d $paper_dir && $paper_dir != $pipeline/final_output ]]; then
-	     paper_name=$(echo "$(basename $paper_dir)") 
-	     mkdir $pipeline/final_output/$paper_name
-          fi
-      done
-done < pipeline.txt 
+#while read pipeline; do
+#      mkdir $pipeline/final_output
+#      for paper_dir in $pipeline/*; do
+#          if [[ -d $paper_dir && $paper_dir != $pipeline/final_output ]]; then
+#	     paper_name=$(echo "$(basename $paper_dir)") 
+#	     mkdir $pipeline/final_output/$paper_name
+#          fi
+#      done
+#done < pipeline.txt 
 
 
 #merge the assembled gtf files
-while read pipeline; do
-      for paper_dir in $pipeline/final_output/*; do  
-	  #echo $paper_dir     
-	  if [[ $pipeline_name == hisat* ]]; then 
-	     tissue_list=hisat_tissue_dirs.txt
-	     script=scripts/stringtie_merge.sh
-	  elif [[ $pipeline_name == star* ]]; then 
-	     tissue_list=star_tissue_dirs.txt
-	     script=scripts/cuffmerge.sh
-	  fi
-	  cat $tissue_list |
- 	  while read tissue_dir;do
-      		bash $script "$tissue_dir" "$paper_dir"
-		#echo $tissue_dir
-                #echo $paper_dir 
-	  done
-      done 
-done < pipeline.txt
+#while read pipeline; do
+#      for paper_dir in $pipeline/final_output/*; do  
+#	  #echo $paper_dir     
+#	  if [[ $pipeline_name == hisat* ]]; then 
+#	     tissue_list=hisat_tissue_dirs.txt
+#	     script=scripts/stringtie_merge.sh
+#	  elif [[ $pipeline_name == star* ]]; then 
+#	     tissue_list=star_tissue_dirs.txt
+#	     script=scripts/cuffmerge.sh
+#	  fi
+#	  cat $tissue_list |
+# 	  while read tissue_dir;do
+#      		bash $script "$tissue_dir" "$paper_dir"
+#		#echo $tissue_dir
+#                #echo $paper_dir 
+#	  done
+#      done 
+#done < pipeline.txt
 
 #create bedtools folder to stor the genomic regions in bed format
 mkdir $work_dir/bedtools
