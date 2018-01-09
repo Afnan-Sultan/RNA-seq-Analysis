@@ -1,10 +1,11 @@
 #!/bin/bash -login
-#PBS -l walltime=04:00:00,nodes=1:ppn=4,mem=64Gb
+#PBS -l walltime=04:00:00,nodes=1:ppn=1,mem=64Gb
 #mdiag -A ged   
 #PBS -m abe             
 #PBS -N scallop
 
-module load scallop
+module swap GNU GNU/4.9
+module load scallop/0.10.2
 
 cd $PBS_O_WORKDIR
 

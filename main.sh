@@ -126,9 +126,9 @@ done < paper_dirs.txt
 
 #assemple the sam files using scallop
 prog_path=$work_dir/programs/coin-Clp
-while read tissue_dir;do
+while read paper_dir;do
       bash $work_dir/scripts/scallop.sh "$paper_dir" "$star_dir" "HPC" ## use "$prog_path" instead of "HPC" for local analysis
-done < star_tissue_dirs.txt  
+done < paper_dirs.txt
 
 
 #creat final output folder to store the most important outputs from the pipeline and the analysiss
