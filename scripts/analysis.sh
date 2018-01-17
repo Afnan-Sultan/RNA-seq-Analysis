@@ -17,7 +17,8 @@ for gtf in $paper_dir/*merged.gtf; do
     bed_output=$(echo "$(basename $gtf)"| sed s/.gtf/.bed/)
     cat $gtf| 
     awk 'BEGIN{OFS="\t";} {print $1,$4-1,$5}' | 
-    sortBed > $bedtools_dir/$bed_output
+    sortBed |
+    mergeBed -i - > $bedtools_dir/$bed_output
 done  
          
 #applying bedtools analysis
