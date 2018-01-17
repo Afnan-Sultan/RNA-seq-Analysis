@@ -5,11 +5,11 @@ plateform="$2"
 ### Download the human genome data
 ## Nucleotide sequence of the GRCh38 primary genome assembly (chromosomes and scaffolds)
 wget ftp://ftp.sanger.ac.uk/pub/gencode/Gencode_human/release_27/GRCh38.primary_assembly.genome.fa.gz -P $index_dir_path
-gunzip -c $index_dir_path/GRCh38.primary_assembly.genome.fa.gz > $index_dir_path/GRCh38.primary_assembly.genome.fa
+gunzip $index_dir_path/GRCh38.primary_assembly.genome.fa.gz 
 
 ## comprehensive gene annotation on the reference chromosomes only
 wget ftp://ftp.sanger.ac.uk/pub/gencode/Gencode_human/release_27/gencode.v27.annotation.gtf.gz -P $index_dir_path
-gunzip -c $index_dir_path/gencode.v27.annotation.gtf.gz > $index_dir_path/gencode.v27.annotation.gtf
+gunzip $index_dir_path/gencode.v27.annotation.gtf.gz > $index_dir_path/gencode.v27.annotation.gtf
 
 ## calculte chromosome sizes of the genome
 if [ $plateform == "HPC" ];then
