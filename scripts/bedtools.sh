@@ -12,9 +12,10 @@ mergeBed -i - > $bedtools_dir/hg38_exons.bed
 cat $index_dir_path/gencode.v27.annotation.gtf | 
 awk 'BEGIN{OFS="\t";} $3=="gene" {print $1,$4-1,$5}' | 
 sortBed | 
-subtractBed -a stdin -b hg38_exons.bed > $bedtools_dir/hg38_introns.bed
+subtractBed -a stdin -b $bedtools_dir/hg38_exons.bed > $bedtools_dir/hg38_introns.bed
 
 cat $index_dir_path/gencode.v27.annotation.gtf | 
 awk 'BEGIN{OFS="\t";} $3=="gene" {print $1,$4-1,$5}' | 
-sortBed | complementBed -i stdin -g $work_dir/hg38_data/hg38.genome > $bedtools_dir/hg38_intergenic.bed
+sortBed | complementBed -i stdin -g $index_dir_path/hg38.genome > $bedtools_dir/hg38_intergenic.bed
+  
   
