@@ -176,15 +176,19 @@ done < paper_dirs.txt
 #create bedtools folder to stor the genomic regions in bed format
 mkdir $work_dir/bedtools
 bedtools_dir=$work_dir/bedtools
-bash $work_dir/scripts/bedtools.sh "$index_dir_path" "$bedtools_dir"
+bash $work_dir/scripts/bedtools.sh "$index_dir_path" "$bedtools_dir" "HPC"
 
 
 #apply the requiered analysis on the resulted merged gtf files 
-while read pipeline; do 
-      for paper_dir in $pipeline/final_output; do
-           bash $work_dir/scripts/analysis.sh "$paper_dir" "$index_dir_path" "$bedtools_dir"
-      done
-done < pipeline.txt
+while read paper_dir;do
+   paper_name=$(echo "$(basename $paper_dir)")
+   for pipeline in  hisat-stringtie star-scallop;do 
+      gtf_dir=$work_dir/$pipeline/$paper_name;
+      #bash $work_dir/scripts/compare_gtf.sh "$gtf_dir" "$index_dir_path" "$bedtools_dir";
+      path_To_gffcompare=$work_dir/my_gffcompare/gffcompare
+      bash $work_dir/scripts/compare_gtf_hpc.sh "$gtf_dir" "$index_dir_path" "$bedtools_dir" "$path_To_gffcompare";
+   done
+done < paper_dirs.txt
 
 
 
