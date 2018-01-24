@@ -8,8 +8,10 @@ wget ftp://ftp.sanger.ac.uk/pub/gencode/Gencode_human/release_27/GRCh38.primary_
 gunzip $index_dir_path/GRCh38.primary_assembly.genome.fa.gz 
 
 ## comprehensive gene annotation on the reference chromosomes only
-wget ftp://ftp.sanger.ac.uk/pub/gencode/Gencode_human/release_27/gencode.v27.annotation.gtf.gz -P $index_dir_path
-gunzip $index_dir_path/gencode.v27.annotation.gtf.gz > $index_dir_path/gencode.v27.annotation.gtf
+#wget ftp://ftp.sanger.ac.uk/pub/gencode/Gencode_human/release_27/gencode.v27.annotation.gtf.gz -P $index_dir_path
+#gunzip $index_dir_path/gencode.v27.annotation.gtf.gz > $index_dir_path/gencode.v27.annotation.gtf
+wget ftp://ftp.sanger.ac.uk/pub/gencode/Gencode_human/release_27/gencode.v27.primary_assembly.annotation.gtf.gz -P $index_dir_path
+gunzip $index_dir_path/gencode.v27.primary_assembly.annotation.gtf.gz > $index_dir_path/gencode.v27.primary_assembly.annotation.gtf
 
 ## calculte chromosome sizes of the genome
 if [ $plateform == "HPC" ];then
