@@ -18,7 +18,7 @@ echo "converting gtf to bed ....... "
 for gtf in $gtf_dir/*merged.gtf; do            
     bed_output=$(echo "$(basename $gtf)"| sed s/.gtf/.bed/)
     cat $gtf| 
-    awk 'BEGIN{OFS="\t";} {print $1,$4-1,$5}' | 
+    awk 'BEGIN{OFS="\t";} $3=="exon" {print $1,$4-1,$5}' |
     sort -k1,1 -k2,2n |
     sortBed |
     mergeBed -i - > $bedtools_dir/$bed_output
