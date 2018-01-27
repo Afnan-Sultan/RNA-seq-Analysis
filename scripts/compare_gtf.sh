@@ -24,24 +24,23 @@ for gtf in $gtf_dir/*merged.gtf; do
     mergeBed -i - > $bedtools_dir/$bed_output
 done 
 
+echo "performing intersection ....... "      
+#applying bedtools analysis
+for bed in $bedtools_dir/*merged.bed; do 
+    bedtools_output=$(echo "$(basename $bed)"| sed s/.bed/_intersect_/)
+    intersectBed -a $bedtools_dir/hg38_exons.bed -b $bed |sort -k1,1 -k2,2n | sortBed | mergeBed -i - > $gtf_dir/$bedtools_output"exons.bed"
+    intersectBed -a $bedtools_dir/hg38_introns.bed -b $bed |sort -k1,1 -k2,2n | sortBed | mergeBed -i - > $gtf_dir/$bedtools_output"introns.bed"
+    intersectBed -a $bedtools_dir/hg38_intergenic.bed -b $bed |sort -k1,1 -k2,2n | sortBed | mergeBed -i - > $gtf_dir/$bedtools_output"intergenic.bed"
+done
+
 echo "calculating jaccard ... " 
-#calculating ntersection using bedtools jaccard 
+#calculating intersection between the outputed genomic intersected bed files and reference genomic bed files using bedtools jaccard 
 for hgBed in $bedtools_dir/hg38_*.bed; do
     regionName=$(echo "$(basename $hgBed)")
-    for mergedBed in $bedtools_dir/*merged.bed; do
+    temp=$(echo $regionName | sed s/hg38_//)
+    for mergedBed in $paper_dir/*$temp; do
         mBed=$(echo "$(basename $mergedBed)")
 	echo $regionName" jaccard "$mBed
 	bedtools jaccard -nonamecheck -a $hgBed -b $mergedBed
     done >> $gtf_dir/jaccard.ods
 done 
-
-echo "performing intersection ....... "      
-#applying bedtools analysis
-for bed in $bedtools_dir/*merged.bed; do 
-    bedtools_output=$(echo "$(basename $bed)"| sed s/.bed/_intersect_/)
-    intersectBed -a $bedtools_dir/hg38_exons.bed -b $bed > $gtf_dir/$bedtools_output"exons.bed"
-    intersectBed -a $bedtools_dir/hg38_introns.bed -b $bed > $gtf_dir/$bedtools_output"introns.bed"
-    intersectBed -a $bedtools_dir/hg38_intergenic.bed -b $bed > $gtf/$bedtools_output"intergenic.bed"
-done
-
-
