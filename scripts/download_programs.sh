@@ -95,6 +95,19 @@ tar xvzf STAR-2.5.3a.tar.gz
 wget cole-trapnell-lab.github.io/cufflinks/assets/downloads/cufflinks-2.2.1.Linux_x86_64.tar.gz
 tar xvzf cufflinks-2.2.1.Linux_x86_64.tar.gz
 
+### required downloads for Trinity pipeline ###
+
+#download Trinity
+wget https://github.com/trinityrnaseq/trinityrnaseq/archive/Trinity-v2.5.1.tar.gz
+tar xvzf Trinity-v2.5.1.tar.gz
+
+#download blat and other binaries from ucsc to convert fasta files to gtf 
+mkdir ucscLib
+rsync -aP rsync://hgdownload.soe.ucsc.edu/genome/admin/exe/linux.x86_64/blat/ ./ucscLib
+rsync -aP rsync://hgdownload.soe.ucsc.edu/genome/admin/exe/linux.x86_64/pslToBed ./ucscLib
+rsync -aP rsync://hgdownload.soe.ucsc.edu/genome/admin/exe/linux.x86_64/bedToGenePred ./ucscLib
+rsync -aP rsync://hgdownload.soe.ucsc.edu/genome/admin/exe/linux.x86_64/genePredToGtf ./ucscLib
+
 ### done ###
 
 cd ../

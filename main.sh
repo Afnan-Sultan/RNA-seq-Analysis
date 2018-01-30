@@ -44,7 +44,9 @@ while read paper_dir; do
           fi
       done  
 done < paper_dirs.txt
+#############################
 
+#perform quality control for the reads 
 ##merge reads coming from one sample
 while read paper_dir;do
       bash $work_dir/scripts/concatenate.sh "$paper_dir"  
@@ -56,43 +58,15 @@ prog_path="HPC" ## in case we use MSU HPC
 while read paper_dir;do
       bash $work_dir/scripts/trim.sh "$paper_dir" "$prog_path" 
 done < paper_dirs.txt
+#############################
 
-##create hisat-stringtie folder for storing all relevant work done by these programs 
-#mkdir $work_dir/hisat-stringtie $work_dir/star-scallop
-
-##copy the same folder structure from data folder into hisat-stringtie folder
-#for pipeline in $work_dir/*; do
-#    pipeline_name=$(echo "$(basename $pipeline)")
-#    if [[ -d $pipeline && ($pipeline_name == hisat* || $pipeline_name == star*) ]]; then
-#       cd $work_dir/data && find -type d -not -name "acc_lists" -not -name "fastq" -not -name "merged_reads" -not -name "trimmed_reads" -exec mkdir -p $pipeline/{} \; 
-#       cd $work_dir
-#       echo $pipeline
-#    fi
-#done > pipeline.txt
-
-
-### define a list of tissues directories inside each pipeline to pass for the assemblers
-#while read pipeline; do
-#      pipeline_name=$(echo "$(basename $pipeline)")
-#      if [[ $pipeline_name == hisat* ]]; then
-#         list=hisat_tissue_dirs
-#      else
-#         list=star_tissue_dirs
-#      fi          
-#      for paper_dir in $pipeline/*; do
-#	  if [ -d $paper_dir ]; then
-#	     for lib_dir in $paper_dir/*; do
-#		 if [ -d $lib_dir ]; then
-#		    for tissue_dir in $lib_dir/*; do
-#	   		if [ -d $tissue_dir ];then
-#	     		   echo $tissue_dir
-#	                fi  	
-#                    done 
-#		  fi
-#	     done
-# 	   fi
-#       done > $list.txt
-#done < pipeline.txt 
+#creat folder to store the final assembled gtf files
+while read paper_dir;do
+      paper_name=$(echo "$(basename $paper_dir)")
+      mkdir -p merged_gtf/$paper_name
+done < paper_dirs.txt
+merged_gtf_dir=$work_dir/merged_gtf
+#############################
 
 ### Hisat-stringtie pipeline
 #map the trimmed merged reads using hisat
@@ -114,9 +88,10 @@ done < paper_dirs.txt
 
 #merge the assembled gtf files
 while read paper_dir;do
-      bash $work_dir/scripts/stringtie_merge.sh "$paper_dir" "$hisat_dir" "HPC"
+      bash $work_dir/scripts/stringtie_merge.sh "$paper_dir" "$hisat_dir" "$merged_gtf_dir" "HPC"
 done < paper_dirs.txt
 #############################
+
 ### STAR-Scallop pipeline
 #map the trimmed merged reads using STAR
 mkdir $work_dir/star-scallop
@@ -138,56 +113,46 @@ done < paper_dirs.txt
 
 #merge the assembled gtf files
 while read paper_dir;do
-      bash $work_dir/scripts/cuffmerge.sh "$paper_dir" "$star_dir" "HPC"
+      bash $work_dir/scripts/cuffmerge.sh "$paper_dir" "$star_dir" "$merged_gtf_dir" "HPC"
 done < paper_dirs.txt
 #############################
-#creat final output folder to store the most important outputs from the pipeline and the analysiss
-#while read pipeline; do
-#      mkdir $pipeline/final_output
-#      for paper_dir in $pipeline/*; do
-#          if [[ -d $paper_dir && $paper_dir != $pipeline/final_output ]]; then
-#	     paper_name=$(echo "$(basename $paper_dir)") 
-#	     mkdir $pipeline/final_output/$paper_name
-#          fi
-#      done
-#done < pipeline.txt 
 
-
-#merge the assembled gtf files
-#while read pipeline; do
-#      for paper_dir in $pipeline/final_output/*; do  
-#	  #echo $paper_dir     
-#	  if [[ $pipeline_name == hisat* ]]; then 
-#	     tissue_list=hisat_tissue_dirs.txt
-#	     script=scripts/stringtie_merge.sh
-#	  elif [[ $pipeline_name == star* ]]; then 
-#	     tissue_list=star_tissue_dirs.txt
-#	     script=scripts/cuffmerge.sh
-#	  fi
-#	  cat $tissue_list |
-# 	  while read tissue_dir;do
-#      		bash $script "$tissue_dir" "$paper_dir"
-#		#echo $tissue_dir
-#                #echo $paper_dir 
-#	  done
-#      done 
-#done < pipeline.txt
-
-#create bedtools folder to stor the genomic regions in bed format
-mkdir $work_dir/bedtools
-bedtools_dir=$work_dir/bedtools
-bash $work_dir/scripts/bedtools.sh "$index_dir_path" "$bedtools_dir" "HPC"
-
-
-#apply the requiered analysis on the resulted merged gtf files 
+#Trinity pipeline
+#map the trimmed merged reads using Trinity
+mkdir $work_dir/trinty
+trinity_dir=$work_dir/trinty
 while read paper_dir;do
-   paper_name=$(echo "$(basename $paper_dir)")
-   for pipeline in  hisat-stringtie star-scallop;do 
-      gtf_dir=$work_dir/$pipeline/$paper_name;
-      #bash $work_dir/scripts/compare_gtf.sh "$gtf_dir" "$index_dir_path" "$bedtools_dir";
-      path_To_gffcompare=$work_dir/my_gffcompare/gffcompare
-      bash $work_dir/scripts/compare_gtf_hpc.sh "$gtf_dir" "$index_dir_path" "$bedtools_dir" "$path_To_gffcompare";
-   done
+      bash $work_dir/scripts/trinty.sh "$prog_path" "$paper_dir" "$trinity_dir" "HPC"
+done < paper_dirs.txt
+
+#convert fasta to gtf 
+while read paper_dir;do
+      bash $work_dir/scripts/faToGtf.sh "$paper_dir" "$trinity_dir" "$index_dir_path" "$merged_gtf_dir" "HPC"
+done < paper_dirs.txt
+#############################
+
+#perform comparisons and analysis
+#compare assembled gtf files with the reference annotation using gffCompare
+while read paper_dir;do
+      bash $work_dir/scripts/compare_gtf.sh "$paper_dir" "$merged_gtf_dir" "$index_dir_path" 
+done < paper_dirs.txt
+
+#create bed_files folder to stor the genomic regions in bed format
+while read paper_dir;do
+      paper_name=$(echo "$(basename $paper_dir)")
+      mkdir -p bed_files/$paper_name
+done < paper_dirs.txt
+bedt_fles_dir=$work_dir/bed_files
+bash $work_dir/scripts/refAnn_to_bedParts.sh "$index_dir_path" "$bed_files_dir" 
+
+#convert the assembled gtf files to bed
+while read paper_dir;do
+      bash $work_dir/scripts/assemGtf_to_bed.sh "$paper_dir" "$merged_gtf_dir" "$bed_files_dir" 
+done < paper_dirs.txt
+
+#compare bed files converted from the assemblers' gtf files with the genomic-parts bed files
+while read paper_dir;do
+      bash $work_dir/scripts/compare_bed.sh "$bed_files_dir" "$paper_dir"
 done < paper_dirs.txt
 
 

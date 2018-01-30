@@ -14,4 +14,10 @@ sudo cp $work_dir/programs/gffcompare/gffcompare /usr/bin
 sudo cp $work_dir/programs/STAR-2.5.3a/bin/Linux_x86_64/STAR /usr/bin/
 sudo cp $work_dir/programs/scallop/src/scallop /usr/bin/
 
+#copy blat and other bnaries to path 
+sudo cp $work_dir/programs/ucscLib/blat /usr/bin/
+sudo cp $work_dir/programs/ucscLib/pslToBed /usr/bin/
+sudo cp $work_dir/programs/ucscLib/bedToGenePred /usr/bin/
+sudo cp $work_dir/programs/ucscLib/genePredToGtf /usr/bin/
+
 
