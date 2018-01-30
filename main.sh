@@ -53,7 +53,7 @@ while read paper_dir;do
 done < paper_dirs.txt
 
 ##trim merged reads
-#prog_path=$work_dir/programs/Trimmomatic-0.36
+#prog_path=$work_dir/programs
 prog_path="HPC" ## in case we use MSU HPC
 while read paper_dir;do
       bash $work_dir/scripts/trim.sh "$paper_dir" "$prog_path" 

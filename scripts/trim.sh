@@ -27,7 +27,7 @@ for lib_dir in $paper_dir/* ; do
              if [ "$prog_path" == "HPC" ];then
                  qsub -v R1_INPUT="$input1",R2_INPUT="$input2",output_pe1="$output_pe1",output_pe2="$output_pe2",output_se1="$output_se1",output_se2="$output_se2" $script_path/trim_job.sh
              else
-                 TRIM=$prog_path
+                 TRIM=$prog_path/Trimmomatic-0.36
                  java -jar "$TRIM/trimmomatic" PE -phred33 $input1 $input2 $output_pe1 $output_se1 $output_pe2 $output_se2 ILLUMINACLIP:$TRIM/adapters/TruSeq3-PE-2.fa:2:30:10 SLIDINGWINDOW:4:2 MINLEN:20
             fi
          done
