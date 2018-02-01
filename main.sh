@@ -119,10 +119,11 @@ done < paper_dirs.txt
 
 #Trinity pipeline
 #map the trimmed merged reads using Trinity
-mkdir $work_dir/trinty
-trinity_dir=$work_dir/trinty
+mkdir $work_dir/trinity
+prog_path="you need to define the path to the folder of trinity"
+trinity_dir=$work_dir/trinity
 while read paper_dir;do
-      bash $work_dir/scripts/trinty.sh "$prog_path" "$paper_dir" "$trinity_dir" "HPC"
+      bash $work_dir/scripts/trinity.sh "$paper_dir" "$trinity_dir" "HPC"  ## use "$prog_path" instead of "HPC" for local analysis
 done < paper_dirs.txt
 
 #convert fasta to gtf 
