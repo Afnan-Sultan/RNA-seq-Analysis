@@ -12,7 +12,7 @@ for txt in $paper_dir/metadata* ; do
           lib_poly_name = $(echo $line | awk 'BEGIN{FS=",";} {print $11}')
           lib_ribo_len = $(echo $line | awk 'BEGIN{FS=",";} {print $4}')
           lib_poly_len = $(echo $line | awk 'BEGIN{FS=",";} {print $12}')
-          if $lib_ribo_len > $lib_poly_len; do
+          if [ $lib_ribo_len > $lib_poly_len ]; then
              lib_len = $lib_poly_len
           else
              lib_len = $lib_ribo_len
