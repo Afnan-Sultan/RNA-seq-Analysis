@@ -2,7 +2,6 @@
 
 paper_dir="$1"
 
-##loop over libraries 
 for txt in $paper_dir/metadata* ; do
     cat $txt |
     while read line; do
