@@ -16,23 +16,27 @@ for lib_dir in $paper_dir/* ; do
 	       read_name=${temp%_1.fastq.gz}
 
 	       #creating associative array to store the library ID as key, and the length as value
-	       declare -A libs_num
+	       declare -A libs_len
                cat $paper_dir/acc_lists/SraRunTable.txt |
 	       while read line; do 
 	             lib_id=$(echo $line | awk 'BEGIN{FS=",";} {print $12}')
 		     read_id=$(echo $line | awk 'BEGIN{FS=",";} {print $11}')
 	             read_lines_len=$(zcat $read | wc -l)
 		     read_len=$(($read_lines_len/4))     		#as each spot is reported in 4 lines
-
+		     #echo $read_id $read_name
 		     #incrementing the liberary value by the read length associated with it
-		     if [[ $read_id == $read_name ]]; then
-			if [[ ${libs_len[lib_id]+isset} ]]; then
-			   libs_len[lib_id]=$((${libs_len[lib_id]}+$read_len))
+		     if [ $read_id == $read_name ]; then
+			echo "inside if" 
+			if [ ${libs_len[$lib_id]+isset} ]; then
+			   echo "inside second if"
+			   libs_len[$lib_id]=$((${libs_len[$lib_id]}+$read_len))
 			else
-			   libs_len[lib_id]=$read_len
+			   echo "inside else"
+			   libs_len[$lib_id]=$read_len
 			fi
-		     fi
+		     fi     
 	       done
+	       echo "${dict[@]}"
 	    done
 
 	    #sort the library IDs by their values and store them in a list
@@ -40,7 +44,7 @@ for lib_dir in $paper_dir/* ; do
             for lib in "${!libs_len[@]}"; do
 		echo $lib ',' ${libs_len["$lib"]}
 		done | sort -n -k3 | sed 's/,.*//') 
-
+	    echo "sorted lbs" $sorted_lib_IDs
 	    #writting the requiered fields in the metada file for each tissue 
 	    for lib in $sorted_lib_IDs; do
     		cat $paper_dir/acc_lists/SraRunTable.txt |
