@@ -45,7 +45,8 @@ while read paper_dir; do
       done  
 done < paper_dirs.txt
 #############################
-#perform random sampling for the reads
+#generate metadata and perform random sampling for the reads
+bash $work_dir/scripts/generate_metadat.sh "$paper_dir"
 bash $work_dir/scripts/random_sampling.sh "$paper_dir"
 
 #############################
