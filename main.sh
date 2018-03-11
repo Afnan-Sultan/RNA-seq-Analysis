@@ -45,7 +45,10 @@ while read paper_dir; do
       done  
 done < paper_dirs.txt
 #############################
+#perform random sampling for the reads
+bash $work_dir/scripts/random_sampling.sh "$paper_dir"
 
+#############################
 #perform quality control for the reads 
 ##merge reads coming from one sample
 while read paper_dir;do
