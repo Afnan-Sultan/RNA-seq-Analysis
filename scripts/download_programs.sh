@@ -4,7 +4,11 @@ work_dir="$1"
 
 cd $work_dir/programs/
 
-### required downloads for downloading/trimming reads ### 
+### required downloads for downloading/sampling and trimming reads ### 
+
+git clone https://github.com/lh3/seqtk.git;
+cd seqtk; make
+cd ../
 
 wget ftp-trace.ncbi.nlm.nih.gov/sra/sdk/2.8.2-1/sratoolkit.2.8.2-1-ubuntu64.tar.gz
 tar xvzf sratoolkit.2.8.2-1-ubuntu64.tar.gz
