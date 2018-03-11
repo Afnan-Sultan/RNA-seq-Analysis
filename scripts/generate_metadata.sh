@@ -1,5 +1,21 @@
 #!/bin/bash
 
+#temporary explanation. 
+#This code utilized the data inside SraRunTable file to generate metadata incluing read id, liberary id and read length. 
+#The aim is to organize liberaries per size to help us in the random sampling step. So, we need the libraris per tissue to be sorted to be utilize its data with the other lib
+#The code works as follows: 
+#1- it loops over the downloaded reads at each libper tissue in a time. 
+#2- each read is matched to it's line in the SraRunTable, then lib id is extracte along with read length
+#3- lib id is stored as key in associative array, while the value is the length of the current read.
+#4- each time a new lib id inroduced, it's aded as key, and if it's already a key, it's value increases by the length of the current read.
+#5- at the end of eah loop, we end up with 4 libraries with their total lenght. 
+#6- the libraries are then sorted and stored in a list.
+#7- this list is now used to export the data we need. when each lib is called, all it's corresponding lines in the SraRunTable file are identified and stored in another file.
+#8- the data in the new file will be sorted by library size.
+#9- finally, the two files of the same tissue are merged in onw file side by sde for further usage. 
+
+
+
 paper_dir="$1"
 
 for lib_dir in $paper_dir/* ; do
