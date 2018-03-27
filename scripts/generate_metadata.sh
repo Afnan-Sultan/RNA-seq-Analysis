@@ -27,6 +27,9 @@ while read line; do
 	echo $lib_name,$tissue_name,$exp_id,$read_id,$read_len >> $paper_dir/metadata_unsorted.txt
 done
 				 	
+cat $paper_dir/metadata_unsorted.txt | awk -F ',' '{A[$1" "$2" "$3]+=$5}END{for(i in A)print i,A[i]}' | sort -k1,1r -k2,2 -k4,4nr | awk '{print $3}' > $paper_dir/sorted_exp
+while read exp;do grep -w $exp $paper_dir/metadata_unsorted.txt;done < $paper_dir/sorted_exp > $paper_dir/metadata_sorted.txt
+cat $paper_dir/metadata_sorted.txt | pr -2 -t -s"," > $paper_dir/metadata.txt
 
 
 
