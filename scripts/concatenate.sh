@@ -21,8 +21,8 @@ for lib_dir in $paper_dir/* ; do
 		        read_id=$(echo $line | awk 'BEGIN{FS=",";} {print $11}')
 		        if [[ $read_id == $read_name ]]; then
                            echo "Add $read_id to $sample_id"
-                           zcat $tissue_dir/RS_reads/$read_id"_1.fastq.gz" >> $tissue_dir/merged_reads/$sample_id"_1.fastq" 
-		           zcat $tissue_dir/RS_reads/$read_id"_2.fastq.gz" >> $tissue_dir/merged_reads/$sample_id"_2.fastq" 
+                           cat $tissue_dir/RS_reads/$read_id"_1.fastq" >> $tissue_dir/merged_reads/$sample_id"_1.fastq" 
+		           cat $tissue_dir/RS_reads/$read_id"_2.fastq" >> $tissue_dir/merged_reads/$sample_id"_2.fastq" 
 		        fi
 	          done
 	       done
