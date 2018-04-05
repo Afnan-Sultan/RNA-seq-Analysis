@@ -45,9 +45,10 @@ while read paper_dir; do
       done  
 done < paper_dirs.txt
 #############################
-#generate metadata and perform random sampling for the reads
-bash $work_dir/scripts/generate_metadat.sh "$paper_dir"
-bash $work_dir/scripts/random_sampling.sh "$paper_dir"
+#generate metadata and perform random sampling for the reads for Li_et_al_2014
+Li_et_al_2014=$work_dir/data/Li_et_al_2014
+bash $work_dir/scripts/generate_metadata.sh "$Li_et_al_2014"
+bash $work_dir/scripts/random_sampling.sh "$Li_et_al_2014"
 
 #############################
 #perform quality control for the reads 
