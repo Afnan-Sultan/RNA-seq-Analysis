@@ -24,11 +24,11 @@ while read line; do
     mkdir -p $paper_dir/$lib_poly/$tissue_poly/RS_reads
     echo $lib_len
     zcat $paper_dir/$lib_ribo/$tissue_ribo/fastq/$read_ribo"_1.fastq.gz"|\
-	seqtk sample - $lib_len > $paper_dir/$lib_ribo/$tissue_ribo/RS_reads/$read_ribo"_RS_1.fastq"
+	seqtk sample -s100 - $lib_len > $paper_dir/$lib_ribo/$tissue_ribo/RS_reads/$read_ribo"_RS_1.fastq"
     zcat $paper_dir/$lib_ribo/$tissue_ribo/fastq/$read_ribo"_2.fastq.gz"|\
-	seqtk sample - $lib_len > $paper_dir/$lib_ribo/$tissue_ribo/RS_reads/$read_ribo"_RS_2.fastq"
+	seqtk sample -s100 - $lib_len > $paper_dir/$lib_ribo/$tissue_ribo/RS_reads/$read_ribo"_RS_2.fastq"
     zcat $paper_dir/$lib_poly/$tissue_poly/fastq/$read_poly"_1.fastq.gz"|\
-	seqtk sample - $lib_len > $paper_dir/$lib_poly/$tissue_poly/RS_reads/$read_poly"_RS_1.fastq"
+	seqtk sample -s100 - $lib_len > $paper_dir/$lib_poly/$tissue_poly/RS_reads/$read_poly"_RS_1.fastq"
     zcat $paper_dir/$lib_poly/$tissue_poly/fastq/$read_poly"_2.fastq.gz"|\
-	seqtk sample - $lib_len > $paper_dir/$lib_poly/$tissue_poly/RS_reads/$read_poly"_RS_2.fastq"
+	seqtk sample -s100 - $lib_len > $paper_dir/$lib_poly/$tissue_poly/RS_reads/$read_poly"_RS_2.fastq"
 done
