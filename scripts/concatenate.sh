@@ -12,9 +12,9 @@ for lib_dir in $paper_dir/* ; do
            tissue_name=$(echo "$(basename $tissue_dir)")
            if [ -d $tissue_dir ]; then
 	      mkdir -p $tissue_dir/merged_reads
-	      for read in $tissue_dir/RS_reads/*_1.fastq.gz; do
+	      for read in $tissue_dir/RS_reads/*_1.fastq; do
 	          temp=$(echo "$(basename $read)")
-		  read_name=${temp%_1.fastq.gz}
+		  read_name=${temp%_1.fastq}
                   cat $paper_dir/acc_lists/SraRunTable.txt |
                   while read line; do 	
 		        sample_id=$(echo $line | awk 'BEGIN{FS=",";} {print $3}')
