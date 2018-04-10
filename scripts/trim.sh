@@ -13,7 +13,7 @@ for lib_dir in $paper_dir/* ; do
     for tissue_dir in $lib_dir/*; do   
       tissue_name=$(echo "$(basename $tissue_dir)")
       if [ -d $tissue_dir ]; then
-         mkdir $tissue_dir/trimmed_reads
+         mkdir -p $tissue_dir/trimmed_reads
          cd $tissue_dir/trimmed_reads/
          for sample in $tissue_dir/merged_reads/*_1.fastq.gz;do
              input1=$sample
