@@ -1,5 +1,3 @@
-#!/bin/bash
-
 work_dir="$(pwd)"
 
 #create the directories for storing human genome relative data, and a directory for stroing the requiered programs
@@ -66,6 +64,13 @@ while read paper_dir;do
       mkdir -p merged_gtf/$paper_name
 done < paper_dirs.txt
 merged_gtf_dir=$work_dir/merged_gtf
+
+#create bed_files folder to stor the genomic regions in bed format
+while read paper_dir;do
+      paper_name=$(echo "$(basename $paper_dir)")
+      mkdir -p bed_files/$paper_name
+done < paper_dirs.txt
+bed_files_dir=$work_dir/bed_files
 #############################
 
 ### Hisat-stringtie pipeline
@@ -79,6 +84,10 @@ done < paper_dirs.txt
 #sort, convert to bam 
 while read paper_dir;do
       bash $work_dir/scripts/getBAM.sh "$paper_dir" "$hisat_dir" "HPC"
+done < paper_dirs.txt
+
+while read paper_dir;do
+      bash $work_dir/scripts/BamToBed.sh "$paper_dir" "$hisat_dir" "HPC" "$bed_files_dir" "stringtie"
 done < paper_dirs.txt
 
 #assemple the sam files using stringtie
@@ -102,7 +111,11 @@ done < paper_dirs.txt
 
 #sort, convert to bam 
 while read paper_dir;do
-      bash $work_dir/scripts/getBAM.sh "$paper_dir" "$star_dir" "HPC"
+      bash $work_dir/scripts/getBAM.sh "$paper_dir" "$star_dir" "HPC" "scallop"
+done < paper_dirs.txt
+
+while read paper_dir;do
+      bash $work_dir/scripts/BamToBed.sh "$paper_dir" "$star_dir" "HPC" "$bed_files_dir"
 done < paper_dirs.txt
 
 #assemple the sam files using scallop
@@ -128,7 +141,7 @@ done < paper_dirs.txt
 
 #convert fasta to gtf 
 while read paper_dir;do
-      bash $work_dir/scripts/faToGtf.sh "$paper_dir" "$trinity_dir" "$index_dir_path" "$merged_gtf_dir" "HPC"
+      bash $work_dir/scripts/faToGtf.sh "$paper_dir" "$trinity_dir" "$index_dir_path" "$merged_gtf_dir" "HPC" "$bed_files_dir"
 done < paper_dirs.txt
 #############################
 
@@ -138,12 +151,6 @@ while read paper_dir;do
       bash $work_dir/scripts/compare_gtf.sh "$paper_dir" "$merged_gtf_dir" "$index_dir_path" 
 done < paper_dirs.txt
 
-#create bed_files folder to stor the genomic regions in bed format
-while read paper_dir;do
-      paper_name=$(echo "$(basename $paper_dir)")
-      mkdir -p bed_files/$paper_name
-done < paper_dirs.txt
-bedt_fles_dir=$work_dir/bed_files
 bash $work_dir/scripts/refAnn_to_bedParts.sh "$index_dir_path" "$bed_files_dir" 
 
 #convert the assembled gtf files to bed
@@ -156,7 +163,13 @@ while read paper_dir;do
       bash $work_dir/scripts/compare_bed.sh "$bed_files_dir" "$paper_dir"
 done < paper_dirs.txt
 
+###########################
 
+#perform exon-intron junction (EIJ) analysis
+#extract the exon-intron spanning sequences
+while read paper_dir;do
+      bash $work_dir/scripts/generate_EIJ.sh "$bed_files_dir" "$paper_dir"
+done < paper_dirs.txt
 
- 
+bash $work_dir/scripts/EIJ_spanning_reads.sh "$bed_files_dir"
 
