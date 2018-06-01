@@ -11,7 +11,7 @@ gunzip $index_dir_path/GRCh38.primary_assembly.genome.fa.gz
 #wget ftp://ftp.sanger.ac.uk/pub/gencode/Gencode_human/release_27/gencode.v27.annotation.gtf.gz -P $index_dir_path
 #gunzip $index_dir_path/gencode.v27.annotation.gtf.gz > $index_dir_path/gencode.v27.annotation.gtf
 wget ftp://ftp.sanger.ac.uk/pub/gencode/Gencode_human/release_27/gencode.v27.primary_assembly.annotation.gtf.gz -P $index_dir_path
-gunzip $index_dir_path/gencode.v27.primary_assembly.annotation.gtf.gz > $index_dir_path/gencode.v27.primary_assembly.annotation.gtf
+gunzip $index_dir_path/gencode.v27.primary_assembly.annotation.gtf.gz
 
 ## calculte chromosome sizes of the genome
 if [ $plateform == "HPC" ];then
@@ -20,13 +20,19 @@ samtools faidx $index_dir_path/GRCh38.primary_assembly.genome.fa
 cut -f1,2 $index_dir_path/GRCh38.primary_assembly.genome.fa.fai > $index_dir_path/hg38.genome
 
 #hisat genome indexing without gtf annotation
-mkdir $index_dir_path/hisat_index
+mkdir -p $index_dir_path/hisat_index
+index="$index_dir_path/hisat_index/hg38"
+genome="$index_dir_path/GRCh38.primary_assembly.genome.fa"
 if [ $plateform == "HPC" ];then
-  module load hisat2/2.1.0;fi
-hisat2-build -p 8 $index_dir_path/GRCh38.primary_assembly.genome.fa $index_dir_path/hisat_index/hg38
+  script_path=$(dirname "${BASH_SOURCE[0]}")
+  qsub -v genome="$genome",index="$index" $script_path/run_hisatBuild.sh;
+else
+ #module load hisat2/2.1.0
+ hisat2-build -p 8 $genome $index
+fi
 
 #star genome indexing without gtf annotation
-mkdir $index_dir_path/star_index
+mkdir -p $index_dir_path/star_index
 genomeDir="$index_dir_path/star_index/"
 genomeFastaFiles="$index_dir_path/GRCh38.primary_assembly.genome.fa"
 if [ $plateform == "HPC" ];then
