@@ -11,34 +11,19 @@ pipeline_name=$(echo "$(basename $trinity_dir)")
 
 while read tissue;do
 	tissue_dir=$trinity_dir/$paper_name/$tissue
-	for fasta in $tissue_dir/*.fasta; do 
-		outputName=$(echo "$(basename $fasta)" | sed s/.fasta/.psl/)
-		blat -t=dna -q=rna $indext_dir_path/GRCh38.primary_assembly.genome.fa $fasta $tissue_dir/$output
+	for fasta in $tissue_dir/SAMN02205259.fasta; do 
+	    output=$(echo $(basename $fasta) | sed 's/.fasta//')
+            genome=$index_dir_path/GRCh38.primary_assembly.genome.fa
+            if [ "$plateform" == "HPC" ];then
+                script_path=$(dirname "${BASH_SOURCE[0]}");
+                qsub -v tissue="$tissue",tissue_dir="$tissue_dir",genome="$genome",output="$output" "$script_path/run_faToGtf.sh";
+            else
+		blat -t=dna -q=rna -fine $genome $output.fasta $tissue_dir/$output.psl
+                pslToBed $tissue_dir/$output.psl $tissue_dir/$output.bed
+                #cp $tissue_dir/$output.bed $bed_files_dir/$tissue"_"$pipeline_name"_bamToBed.bed" #the name is for the sake of uniformity
+                bedToGenePred $tissue_dir/$output.bed $tissue_dir/$output.GenePred
+                genePredToGtf file $tissue_dir/$output.GenePred $tissue_dir/$output.gtf
+                #genePredToGtf $tissue_dir/$output.GenePred $merged_gtf_dir/$paper_name/$output.gtf
+            fi
 	done	   
 done < $paper_dir/tissues.txt
-
-while read tissue;do
-	tissue_dir=$trinity_dir/$paper_name/$tissue
-	for psl in $tissue_dir/*.psl; do 
-		outputName=$(echo "$(basename $psl)" | sed s/.psl/.bed/)
-		pslToBed $psl $tissue_dir/$output
-		cp $tissue_dir/$output $bed_files_dir/$tissue"_"$pipeline_name"_bamToBed.bed" #the name is for the sake of uniformity
-	done	   
-done < $paper_dir/tissues.txt
-
-while read tissue;do
-	tissue_dir=$trinity_dir/$paper_name/$tissue
-	for bed in $tissue_dir/*.bed; do 
-		outputName=$(echo "$(basename $psl)" | sed s/.bed/.GenePred/)
-		bedToGenePred $bed $tissue_dir/$output
-	done	   
-done < $paper_dir/tissues.txt
-
-while read tissue;do
-	tissue_dir=$trinity_dir/$paper_name/$tissue
-	for GenePred in $tissue_dir/*.GenePred; do 
-		outputName=$(echo "$(basename $psl)" | sed s/.GenePred/.gtf/)
-		genePredToGtf $GenePred $merged_gtf_dir/$paper_name/$output
-	done	   
-done < $paper_dir/tissues.txt
-
