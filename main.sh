@@ -143,6 +143,14 @@ done < paper_dirs.txt
 while read paper_dir;do
       bash $work_dir/scripts/faToGtf.sh "$paper_dir" "$trinity_dir" "$index_dir_path" "$merged_gtf_dir" "HPC" "$bed_files_dir"
 done < paper_dirs.txt
+
+#merge the assembled gtf files
+while read paper_dir;do
+      bash $work_dir/scripts/trinity_merge.sh "$paper_dir" "$trinity_dir" "$merged_gtf_dir" "HPC" ## may be we can use cuffmerge.sh
+done < paper_dirs.txt
+
+#for loop to copy the bed files into the bed_files_dir (I hashed this line in faToGtf.sh)
+
 #############################
 
 #perform comparisons and analysis
