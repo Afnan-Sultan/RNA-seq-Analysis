@@ -86,10 +86,6 @@ while read paper_dir;do
       bash $work_dir/scripts/getBAM.sh "$paper_dir" "$hisat_dir" "HPC"
 done < paper_dirs.txt
 
-while read paper_dir;do
-      bash $work_dir/scripts/BamToBed.sh "$paper_dir" "$hisat_dir" "HPC" "$bed_files_dir" "stringtie"
-done < paper_dirs.txt
-
 #assemple the sam files using stringtie
 while read paper_dir;do
       bash $work_dir/scripts/stringtie.sh "$paper_dir" "$hisat_dir" "HPC"
@@ -112,10 +108,6 @@ done < paper_dirs.txt
 #sort, convert to bam 
 while read paper_dir;do
       bash $work_dir/scripts/getBAM.sh "$paper_dir" "$star_dir" "HPC" "scallop"
-done < paper_dirs.txt
-
-while read paper_dir;do
-      bash $work_dir/scripts/BamToBed.sh "$paper_dir" "$star_dir" "HPC" "$bed_files_dir"
 done < paper_dirs.txt
 
 #assemple the sam files using scallop
@@ -174,6 +166,16 @@ done < paper_dirs.txt
 ###########################
 
 #perform exon-intron junction (EIJ) analysis
+
+#convert Bam files to Bed from the different pipelines
+while read paper_dir;do
+      bash $work_dir/scripts/BamToBed.sh "$paper_dir" "$hisat_dir" "HPC" "$bed_files_dir" "stringtie"
+done < paper_dirs.txt
+
+while read paper_dir;do
+      bash $work_dir/scripts/BamToBed.sh "$paper_dir" "$star_dir" "HPC" "$bed_files_dir"
+done < paper_dirs.txt
+
 #extract the exon-intron spanning sequences
 while read paper_dir;do
       bash $work_dir/scripts/generate_EIJ.sh "$bed_files_dir" "$paper_dir"
