@@ -21,7 +21,9 @@ while read tissue;do
                 qsub -v tissue="$tissue",tissue_dir="$tissue_dir",genome="$genome",output="$output" "$script_path/run_faToGtf.sh";
             else
 		blat -t=dna -q=rna -fine $genome $output.fasta $tissue_dir/$output.psl
-                pslToBed $tissue_dir/$output.psl $tissue_dir/$output.bed
+                head -n5 $tissue_dir/$output.psl > $tissue_dir/$output.best.psl
+                tail -n+6 $tissue_dir/$output.psl | sort -k10,10 -k1,1nr | sort -u -k10,10 --merge >> $tissue_dir/$output.best.psl
+                pslToBed $tissue_dir/$output.best.psl $tissue_dir/$output.bed
                 #cp $tissue_dir/$output.bed $bed_files_dir/$tissue"_"$pipeline_name"_bamToBed.bed" #the name is for the sake of uniformity
                 bedToGenePred $tissue_dir/$output.bed $tissue_dir/$output.GenePred
                 genePredToGtf file $tissue_dir/$output.GenePred $tissue_dir/$output.gtf
