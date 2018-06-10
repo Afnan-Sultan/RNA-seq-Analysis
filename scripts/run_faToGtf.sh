@@ -1,5 +1,5 @@
 #!/bin/bash -login
-#PBS -l walltime=01:00:00,nodes=1:ppn=1,mem=32Gb
+#PBS -l walltime=120:00:00,nodes=1:ppn=1,mem=32Gb
 #mdiag -A ged   
 #PBS -m abe             
 #PBS -N faToGtf

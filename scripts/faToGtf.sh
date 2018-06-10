@@ -10,12 +10,14 @@ paper_name=$(echo "$(basename $paper_dir)")
 pipeline_name=$(echo "$(basename $trinity_dir)")
 
 while read tissue;do
-	tissue_dir=$trinity_dir/$paper_name/$tissue
-	for fasta in $tissue_dir/SAMN02205259.fasta; do 
-	    output=$(echo $(basename $fasta) | sed 's/.fasta//')
-            genome=$index_dir_path/GRCh38.primary_assembly.genome.fa
+    tissue_dir=$trinity_dir/$paper_name/$tissue
+    for fasta in $tissue_dir/*.fasta; do 
+	output=$(echo $(basename $fasta) | sed 's/.fasta//')
+        genome=$index_dir_path/GRCh38.primary_assembly.genome.fa
+        if [ ! -f $tissue_dir/$output.gtf ];then  
             if [ "$plateform" == "HPC" ];then
                 script_path=$(dirname "${BASH_SOURCE[0]}");
+                echo "$fasta"
                 qsub -v tissue="$tissue",tissue_dir="$tissue_dir",genome="$genome",output="$output" "$script_path/run_faToGtf.sh";
             else
 		blat -t=dna -q=rna -fine $genome $output.fasta $tissue_dir/$output.psl
@@ -25,5 +27,6 @@ while read tissue;do
                 genePredToGtf file $tissue_dir/$output.GenePred $tissue_dir/$output.gtf
                 #genePredToGtf $tissue_dir/$output.GenePred $merged_gtf_dir/$paper_name/$output.gtf
             fi
-	done	   
+        fi
+    done	   
 done < $paper_dir/tissues.txt
