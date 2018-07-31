@@ -1,5 +1,5 @@
 #!/bin/bash -login
-#PBS -l walltime=01:00:00,nodes=1:ppn=1,mem=32Gb
+#PBS -l walltime=120:00:00,nodes=1:ppn=1,mem=32Gb
 #mdiag -A ged   
 #PBS -m abe             
 #PBS -N faToGtf
@@ -16,7 +16,9 @@ mv $output.fasta.clean $tissue_dir/.
 cd $tissue_dir/
 
 blat -t=dna -q=rna -fine $genome $output.fasta.clean $tissue_dir/$output.psl
-pslToBed $tissue_dir/$output.psl $tissue_dir/$output.bed
+head -n5 $tissue_dir/$output.psl > $tissue_dir/$output.best.psl
+tail -n+6 $tissue_dir/$output.psl | sort -k10,10 -k1,1nr | sort -u -k10,10 --merge >> $tissue_dir/$output.best.psl
+pslToBed $tissue_dir/$output.best.psl $tissue_dir/$output.bed
 #cp $tissue_dir/$output.bed $bed_files_dir/$tissue"_"$pipeline_name"_bamToBed.bed" #the name is for the sake of uniformity
 bedToGenePred $tissue_dir/$output.bed $tissue_dir/$output.GenePred
 genePredToGtf file $tissue_dir/$output.GenePred $tissue_dir/$output.gtf
