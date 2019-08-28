@@ -1,11 +1,16 @@
 #!/bin/bash
 
-prog_dir="$1"
-index_dir_path="$2"
-paper_dir="$3"
+work_dir="$1"
+prog_dir="$2"
+index_dir_path="$3"
+paper_dir="$4"
 
 echo "################prepare Transcriptome.fasta########################"
-.$prog_dir/TransDecoder-TransDecoder-v5.5.0/util/gtf_genome_to_cdna_fasta.pl $index_dir_path/gencode.v27.primary_assembly.annotation.gtf $index_dir_path/GRCh38.primary_assembly.genome.fa > $index_dir_path/transcripts.fasta
+
+#the origial gtf_genome_to_cdna_fasta.pl file wasn't compatiple with the gencode gtf version as it contained more info than required, and the code terminated due to insignificant error to the needed analysis. So, the modified version comments an if condition to allow the analysis to move on.  
+cp $work_dir/scripts/modified_gtf_genome_to_cdna_fasta.pl $prog_dir/TransDecoder-TransDecoder-v5.5.0/util
+
+.$prog_dir/TransDecoder-TransDecoder-v5.5.0/util/modified_gtf_genome_to_cdna_fasta.pl $index_dir_path/gencode.v27.primary_assembly.annotation.gtf $index_dir_path/GRCh38.primary_assembly.genome.fa > $index_dir_path/transcripts.fasta
 
 echo "####################quantifying reads########################"
 
