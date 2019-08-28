@@ -116,8 +116,8 @@ rsync -aP rsync://hgdownload.soe.ucsc.edu/genome/admin/exe/linux.x86_64/genePred
 ### reqiured downloads for expression analysis ###
 
 #download TransDecoder to prepare the Transcriptome.fasta file to be passed for Salmon
-wget https://github.com/TransDecoder/TransDecoder/archive/TransDecoder-v5.5.0.zip
-unzip TransDecoder-v5.5.0.zip
+wget https://github.com/TransDecoder/TransDecoder/archive/TransDecoder-v5.5.0.tar.gz
+tar xvzf TransDecoder-v5.5.0.zip
 
 #download Salmon to quantify RNA-seq reads
 wget https://github.com/COMBINE-lab/salmon/releases/download/v0.14.1/salmon-0.14.1_linux_x86_64.tar.gz
