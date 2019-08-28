@@ -147,7 +147,7 @@ done < paper_dirs.txt
 
 #############################
 #perform expression analysis
-bash $work_dir/scripts/expression_analysis.sh "$prog_path" "$index_dir_path" "$paper_dir" 
+bash $work_dir/scripts/expression_analysis.sh "$work_dir" "$prog_path" "$index_dir_path" "$paper_dir" 
 
 
 #############################
