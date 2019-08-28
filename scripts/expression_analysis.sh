@@ -10,7 +10,7 @@ echo "################prepare Transcriptome.fasta########################"
 #the origial gtf_genome_to_cdna_fasta.pl file wasn't compatiple with the gencode gtf version as it contained more info than required, and the code terminated due to insignificant error to the needed analysis. So, the modified version comments an if condition to allow the analysis to move on.  
 cp $work_dir/scripts/modified_gtf_genome_to_cdna_fasta.pl $prog_dir/TransDecoder-TransDecoder-v5.5.0/util/
 
-#perl $prog_dir/TransDecoder-TransDecoder-v5.5.0/util/modified_gtf_genome_to_cdna_fasta.pl $index_dir_path/gencode.v27.primary_assembly.annotation.gtf $index_dir_path/GRCh38.primary_assembly.genome.fa > $index_dir_path/transcripts.fasta
+perl $prog_dir/TransDecoder-TransDecoder-v5.5.0/util/modified_gtf_genome_to_cdna_fasta.pl $index_dir_path/gencode.v27.primary_assembly.annotation.gtf $index_dir_path/GRCh38.primary_assembly.genome.fa > $index_dir_path/transcripts.fasta
 
 echo "####################quantifying reads########################"
 
