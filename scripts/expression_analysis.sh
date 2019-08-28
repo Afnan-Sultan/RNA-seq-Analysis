@@ -5,6 +5,8 @@ prog_dir="$2"
 index_dir_path="$3"
 paper_dir="$4"
 
+if [ "$prog_dir" == "HPC" ];then prog_dir=$work_dir;fi
+
 echo "################prepare Transcriptome.fasta########################"
 
 #the origial gtf_genome_to_cdna_fasta.pl file wasn't compatiple with the gencode gtf version as it contained more info than required, and the code terminated due to insignificant error to the needed analysis. So, the modified version comments an if condition to allow the analysis to move on.  
