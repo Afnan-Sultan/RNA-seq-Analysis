@@ -146,11 +146,24 @@ done < paper_dirs.txt
 #############################
 
 #############################
-#perform expression analysis
+##perform expression analysis
+
+#run Transdecoder and salmon
 prog_path="HPC" ## in case we use MSU HPC
 while read paper_dir;do
      bash $work_dir/scripts/expression_analysis.sh "$work_dir" "$prog_path" "$index_dir_path" "$paper_dir" 
 done < paper_dirs.txt
+
+#run tximport
+for lib_dir in expression_analysis/* ; do
+    if [[ -d $lib_dir && ($lib_name == poly* || $lib_name == ribo*) ]]; then
+       for tissue_dir in $lib_dir/*; do
+           if [ -d $tissue_dir ]; then
+		Rscript $work_dir/scripts/tximport.R $tissue_dir
+	   fi
+       done
+    fi
+done
 
 #############################
 
