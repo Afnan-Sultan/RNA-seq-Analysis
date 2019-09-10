@@ -5,7 +5,7 @@ args = commandArgs(trailingOnly=TRUE)
 dir = args[1]
 data_type = args[2]
 
-files = list.files(dir, pattern=paste('*',data_type,'_split.csv',sep='')
+files = list.files(dir, pattern=paste('*',data_type,'_split.csv',sep=''))
 for(csv in files){
   print(csv)
   samples = read.csv(csv)
