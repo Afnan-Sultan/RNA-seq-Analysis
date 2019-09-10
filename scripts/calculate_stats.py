@@ -1,7 +1,13 @@
+import sys
 import statistics
 import scipy.stats
 
-def group_info(infile, k):
+infile_path = sys.argv[1]
+outfile_dir = sys.argv[2]
+gtf_type = sys.argv[3]
+data_type = sys.argv[4]
+
+def group_info(infile, k, data_type):
     '''
     This function groups the data into a dictionary according to library type 
     -poly and ribo- if k = 2, and according to tissue type -brain and tumor- 
@@ -9,21 +15,27 @@ def group_info(infile, k):
     '''
     #capture the header to help separating the groups
     in_header1 = infile[0].strip().split(',')
-    in_header2 = infile[1].strip().split(',')
+    start = 1
+    if data_type == 'gtf':
+	    in_header2 = infile[1].strip().split(',')
+	    start = 2
     
     #the dictionary in where the data will be grouped
     info_dict = {}
     
     #loop over the file rows, create distinct keys and store all the values corresponding
     #to this key in a list.
-    for line in infile[2:]:
+    for line in infile[start:]:
         line = line.strip().split(',')
         info = ','.join(line[:k]) #key primary info based on library/tissue. 
-                                  #i.e. scallop,poly/poly,brain
+                                  #i.e. scallop_(poly)/(poly_brain)
         
         #loop over the columns to identify the secondary info. i.e base,sensetivity 
         for i in range(len(in_header1[4:])):
-            region_test = ','+in_header1[i+4]+','+in_header2[i+4]
+            if data_type == 'gtf':
+                region_test = ','+in_header1[i+4]+','+in_header2[i+4]
+            else:
+                region_test = ','+in_header1[i+4]
             new_info = info + region_test
             
             #wheneve a key is encountered, the corresponding value is stored.
@@ -33,7 +45,7 @@ def group_info(infile, k):
                 info_dict[new_info] = [float(line[i+4])]
     return info_dict
 
-def calc_stats(info_dict, k, outfile):
+def calc_stats(info_dict, k, outfile, data_type):
     '''
     This function takes as input the output of the previous function. It then
     performs statistical analysis over each value and store it in a dictionary,
@@ -45,10 +57,17 @@ def calc_stats(info_dict, k, outfile):
     stats_dict = {}
     if k == 3:
         tissue_state = ['brain', 'tumor']
-        outfile.write('aligner,lib,region,test,'+tissue_state[0]+',,'+tissue_state[1]+'\n,,,,mean,std,mean,std,p_val\n')
+        if data_type == 'gtf':
+            outfile.write('aligner,lib,region,test,'+tissue_state[0]+',,'+tissue_state[1]+'\n,,,,mean,std,mean,std,p_val\n')
+        else:
+            outfile.write('aligner,lib,region,'+tissue_state[0]+',,'+tissue_state[1]+'\n,,,mean,std,mean,std,p_val\n')
     else:
         tissue_state = ['poly', 'ribo']
-        outfile.write('aligner,region,test,'+tissue_state[0]+',,'+tissue_state[1]+'\n,,,mean,std,mean,std,p_val\n')
+        if data_type == 'gtf':
+            outfile.write('aligner,region,test,'+tissue_state[0]+',,'+tissue_state[1]+'\n,,,mean,std,mean,std,p_val\n')
+        else:
+            outfile.write('aligner,region,'+tissue_state[0]+',,'+tissue_state[1]+'\n,,mean,std,mean,std,p_val\n')
+        
     
     #loop over the keys of the dictionary. For each dictionary, there is a 
     #corresponding key with difference in library/tissue name. The loop captures
@@ -79,17 +98,18 @@ def calc_stats(info_dict, k, outfile):
 
     return stats_dict
 
-infile = open("gffCompare.csv").readlines()
-lib_info = group_info(infile, 2)
-tissue_info = group_info(infile, 3)
+infile = open(infile_path).readlines()
+lib_info = group_info(infile, 2, data_type)
+tissue_info = group_info(infile, 3, data_type)
 
-outfile1 = open("lib_stats.csv",'w')
-lib_stats = calc_stats(lib_info, 2, outfile1)
+outfile1 = open(outfile_dir+"/lib_stats.csv",'w')
+lib_stats = calc_stats(lib_info, 2, outfile1, data_type)
 outfile1.close()
 
-outfile2 = open("tissue_stats.csv",'w')
-tissue_stats = calc_stats(tissue_info, 3, outfile2)
-outfile2.close()
+if gtf_type == 'single':
+	outfile2 = open(outfile_dir+"/tissue_stats.csv",'w')
+	tissue_stats = calc_stats(tissue_info, 3, outfile2, data_type)
+	outfile2.close()
 
 
 

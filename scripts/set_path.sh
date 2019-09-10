@@ -4,6 +4,9 @@ work_dir="$1"
 #copying the code file -that will download the reads and convert them into fastq- to the PATH
 sudo cp $work_dir/programs/sratoolkit.2.8.2-1-ubuntu64/bin/fastq-dump /usr/bin/
 
+#copy seqtk to PATH
+sudo cp work_dir/programs/seqtk/seqtk /usr/bin
+
 #copying samtools, Hisat, Stringtie & gffcompare to $PATH
 sudo cp $work_dir/programs/samtools-01.6/samtools /usr/bin
 sudo cp $work_dir/programs/hisat2/hisat2* hisat2/*.py /usr/bin

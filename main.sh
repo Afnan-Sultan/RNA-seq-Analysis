@@ -1,3 +1,5 @@
+#!/bin/bash
+
 work_dir="$(pwd)"
 
 #create the directories for storing human genome relative data, and a directory for stroing the requiered programs
@@ -13,7 +15,11 @@ bash $work_dir/scripts/genomeResources.sh "$index_dir_path" "HPC"
 ## define a list of paper directories inside data file
 for paper_dir in $work_dir/data/*; do if [ -d $paper_dir ];then
   echo $paper_dir;
-fi;done > paper_dirs.txt      
+fi;done > paper_dirs.txt 
+
+for pipeline_dir in $work_dir/data/*/*; do if [ -d $paper_dir ];then
+  echo $paper_dir;
+fi;done > pipelines_dirs.txt      
 
 #download the RNA-seq data 
 module load SRAToolkit/2.3.4.2                 #if you already have it  
@@ -42,6 +48,14 @@ while read paper_dir; do
           fi
       done  
 done < paper_dirs.txt
+
+#############################
+
+#generate metadata and perform random sampling for the reads for Li_et_al_2014
+Li_et_al_2014=$work_dir/data/Li_et_al_2014
+bash $work_dir/scripts/generate_metadata.sh "$Li_et_al_2014"
+bash $work_dir/scripts/random_sampling.sh "$Li_et_al_2014"
+
 #############################
 
 #perform quality control for the reads 
@@ -58,19 +72,21 @@ while read paper_dir;do
 done < paper_dirs.txt
 #############################
 
-#creat folder to store the final assembled gtf files
-while read paper_dir;do
-      paper_name=$(echo "$(basename $paper_dir)")
-      mkdir -p merged_gtf/$paper_name
-done < paper_dirs.txt
-merged_gtf_dir=$work_dir/merged_gtf
+#create folders to store the final assembled gtf files (and bed files for later analysis)
 
-#create bed_files folder to stor the genomic regions in bed format
 while read paper_dir;do
       paper_name=$(echo "$(basename $paper_dir)")
-      mkdir -p bed_files/$paper_name
+      mkdir -p Analysis/merged_gtf/$paper_name
+      mkdir -p Analysis/single_gtf/$paper_name
+      mkdir -p Analysis/bed_files/$paper_name
+      mkdir -p Analysis/bed_files/merged_bed/$paper_name
+      mkdir -p Analysis/bed_files/single_bed/$paper_name
 done < paper_dirs.txt
-bed_files_dir=$work_dir/bed_files
+merged_gtf_dir=$work_dir/Analysis/merged_gtf
+single_gtf_dir=$work_dir/Analysis/single_gtf
+bed_files_dir=$work_dir/Analysis/bed_files
+merged_bed_dir=$work_dir/Analysis/bed_files/merged_bed
+single_bed_dir=$work_dir/Analysis/bed_files/single_bed
 #############################
 
 ### Hisat-stringtie pipeline
@@ -169,39 +185,90 @@ done
 
 #perform comparisons and analysis
 #compare assembled gtf files with the reference annotation using gffCompare
+
+##merged_GTFs analysis
 while read paper_dir;do
-      bash $work_dir/scripts/compare_gtf.sh "$paper_dir" "$merged_gtf_dir" "$index_dir_path" 
+      bash $work_dir/scripts/compare_merged_gtf.sh "$paper_dir" "$merged_gtf_dir" "$index_dir_path" 
 done < paper_dirs.txt
 
+while read paper_dir;do
+	mkdir -p $merged_gtf_dir/$(echo "$(basename $paper_dir)")/gffCompare/splitted_files
+	in_dir=$merged_gtf_dir/$(echo "$(basename $paper_dir)")/gffCompare
+	python summarize_gffCompare.py $in_dir $in_dir
+	python calculate_stats.py $in_dir/gffCompare_stats_summary.csv $in_dir 'merged' 'gtf'
+done < paper_dirs.txt
+
+while read paper_dir;do
+	in_dir=$merged_gtf_dir/$(echo "$(basename $paper_dir)")/gffCompare
+	out_dir=$in_dir/splitted_files
+	python split_features.py $in_dir/gffCompare_stats_summary.csv $out_dir 'merged' 'gtf'
+	R anova_auto.R $out_dir 'gtf' > $in_dir/anova_pval.txt 
+done < paper_dirs.txt
+
+##single_GTFs analysis
+while read paper_dir;do
+	while read pipeline_dir;do
+		bash $work_dir/scripts/compare_single_gtf.sh "$pipeline_dir" "$single_gtf_dir" "$index_dir_path" "$paper_dir" 
+	done < pipelines_dir.txt
+done < paper_dirs.txt
+
+while read paper_dir;do
+	mkdir -p $single_gtf_dir/$(echo "$(basename $paper_dir)")/gffCompare/splitted_files
+	in_dir=$single_gtf_dir/$(echo "$(basename $paper_dir)")/gffCompare
+	python summarize_gffCompare.py $in_dir $in_dir
+	python calculate_stats.py $in_dir/gffCompare_stats_summary.csv $in_dir 'single' 'gtf'
+done < paper_dirs.txt
+
+while read paper_dir;do
+	in_dir=$single_gtf_dir/$(echo "$(basename $paper_dir)")/gffCompare
+	out_dir=$single_gffCompare_dir/splitted_files
+	python split_features.py $in_dir/gffCompare_stats_summary.csv $out_dir 'single' 'gtf'
+	R anova_auto.R $out_dir 'gtf' > $in_dir/anova_pval.txt 
+done < paper_dirs.txt
+
+#convert the refernce gtf files to bed
 bash $work_dir/scripts/refAnn_to_bedParts.sh "$index_dir_path" "$bed_files_dir" 
 
-#convert the assembled gtf files to bed
+#convert merged gtfs to bed
 while read paper_dir;do
-      bash $work_dir/scripts/assemGtf_to_bed.sh "$paper_dir" "$merged_gtf_dir" "$bed_files_dir" 
+      bash $work_dir/scripts/assemGtf_to_bed.sh "$paper_dir" "$merged_gtf_dir" "$merged_bed_dir" 
 done < paper_dirs.txt
 
-#compare bed files converted from the assemblers' gtf files with the genomic-parts bed files
+#convert single gtfs to bed
 while read paper_dir;do
-      bash $work_dir/scripts/compare_bed.sh "$bed_files_dir" "$paper_dir"
+	while read pipeline_dir;do
+		bash $work_dir/scripts/assemGtf_to_bed.sh "$paper_dir" "$single_gtf_dir" "$single_bed_dir"  
+	done < pipelines_dir.txt
 done < paper_dirs.txt
 
+#compare bed files converted from merged gtf files with the genomic-parts bed files
+while read paper_dir;do
+      in_dir=$merged_bed_dir/$(echo "$(basename $paper_dir)")
+      bash $work_dir/scripts/compare_bed.sh "$in_dir"
+      python summarize_bed.py "$ind_dir" "$in_dir"
+      python calculate_stats.py $in_dir/jaccard_vals.csv $in_dir 'merged' 'bed'
+done < paper_dirs.txt
+
+while read paper_dir;do
+	in_dir=$merged_bed_dir/$(echo "$(basename $paper_dir)")
+	out_dir=$in_dir/splitted_files
+	python split_features.py $in_dir/jaccard_vals.csv $out_dir 'merged' 'bed'
+	R anova_auto.R $out_dir 'bed' > $in_dir/anova_pval.txt 
+done < paper_dirs.txt
+
+#compare bed files converted from single gtf files with the genomic-parts bed files
+while read paper_dir;do
+      in_dir=$single_bed_dir/$(echo "$(basename $paper_dir)")
+      bash $work_dir/scripts/compare_bed.sh "$in_dir"
+      python summarize_bed.py "$in_dir" "$in_dir"
+      python calculate_stats.py $in_dir/jaccard_vals.csv $in_dir 'single' 'bed'
+done < paper_dirs.txt
+
+while read paper_dir;do
+	in_dir=$single_bed_dir/$(echo "$(basename $paper_dir)")
+	out_dir=$in_dir/splitted_files
+	python split_features.py $in_dir/jaccard_vals.csv $out_dir 'single' 'bed'
+	R anova_auto.R $out_dir 'bed' > $in_dir/anova_pval.txt 
+done < paper_dirs.txt
 ###########################
-
-#perform exon-intron junction (EIJ) analysis
-
-#convert Bam files to Bed from the different pipelines
-while read paper_dir;do
-      bash $work_dir/scripts/BamToBed.sh "$paper_dir" "$hisat_dir" "HPC" "$bed_files_dir" "stringtie"
-done < paper_dirs.txt
-
-while read paper_dir;do
-      bash $work_dir/scripts/BamToBed.sh "$paper_dir" "$star_dir" "HPC" "$bed_files_dir"
-done < paper_dirs.txt
-
-#extract the exon-intron spanning sequences
-while read paper_dir;do
-      bash $work_dir/scripts/generate_EIJ.sh "$bed_files_dir" "$paper_dir"
-done < paper_dirs.txt
-
-bash $work_dir/scripts/EIJ_spanning_reads.sh "$bed_files_dir"
 

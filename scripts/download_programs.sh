@@ -1,21 +1,25 @@
 #!/bin/bash
+
 work_dir="$1"
+
 #downloading and installing the required programms for hisat/stringtie and star/scallop pipelines 
 
 cd $work_dir/programs/
 
-### required downloads for downloading/trimming reads ### 
+### required downloads for downloading/sampling and trimming reads ### 
 
 wget ftp-trace.ncbi.nlm.nih.gov/sra/sdk/2.8.2-1/sratoolkit.2.8.2-1-ubuntu64.tar.gz
 tar xvzf sratoolkit.2.8.2-1-ubuntu64.tar.gz
+
+git clone https://github.com/lh3/seqtk.git;
+cd seqtk; make
+cd ../
 
 wget www.usadellab.org/cms/uploads/supplementary/Trimmomatic/Trimmomatic-0.36.zip
 unzip Trimmomatic-0.36.zip
 mv Trimmomatic-0.36.zip/trimmomatic-0.36.jar Trimmomatic-0.36.zip/trimmomatic
 
 ### done ### 
-
-
 
 ### required downloads for hisat-stringtie pipeline ###
    
@@ -41,7 +45,6 @@ make release
 cd ../
 
 ### done ### 
-
 
 
 ### required downloads for star-scallop pipeline ###
