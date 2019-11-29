@@ -24,6 +24,9 @@ mv Trimmomatic-0.36.zip/trimmomatic-0.36.jar Trimmomatic-0.36.zip/trimmomatic
 ### required downloads for hisat-stringtie pipeline ###
    
 git clone https://github.com/infphilo/hisat2 #installing Hisat2
+cd hisat2
+make
+cd ../
 
 wget https://github.com/samtools/samtools/releases/download/1.6/samtools-1.6.tar.bz2 #downloadeing samtools-1.6
 tar jxvf samtools-1.6.tar.bz2
