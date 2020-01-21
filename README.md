@@ -74,22 +74,39 @@ Further analysis needed is to dig deeper into the assembled transcriptome and co
 # References
 
 1- Wang, Z., Gerstein, M., & Snyder, M. (2009). RNA-Seq: A revolutionary tool for transcriptomics. Nature Reviews Genetics, 10(1), 57-63. doi:10.1038/nrg2484
+
 2- Sultan M, Dokel S, Amstislavskiy V, Wuttig D, Sultmann H, Lehrach H, Yaspo ML. A simple strand-specific RNA-Seq library preparation protocol combining the Illumina TruSeq RNA and the dUTP methods. Biochem Biophys Res Commun. 2012;422(4):643–646. doi: 10.1016/j.bbrc.2012.05.043.
+
 3- Cui, P., Lin, Q., Ding, F., Xin, C., Gong, W., Zhang, L., . . . Yu, J. (2010). A comparison between ribo-minus RNA-sequencing and polyA-selected RNA-sequencing. Genomics, 96(5), 259-265. doi:10.1016/j.ygeno.2010.07.010
+
 4- Tariq, M. A., Kim, H. J., Jejelowo, O., & Pourmand, N. (2011). Whole-transcriptome RNAseq analysis from minute amount of total RNA. Nucleic Acids Research, 39(18). doi:10.1093/nar/gkr547
+
 5- Li, S., Tighe, S. W., Nicolet, C. M., Grove, D., Levy, S., Farmerie, W., . . . Mason, C. E. (2014). Multi-platform assessment of transcriptome profiling using RNA-seq in the ABRF next-generation sequencing study. Nature Biotechnology, 32(9), 915-925. doi:10.1038/nbt.2972
+
 6- Sultan, M., Amstislavskiy, V., Risch, T., Schuette, M., Dökel, S., Ralser, M., . . . Yaspo, M. (2014). Influence of RNA extraction methods and library selection schemes on RNA-seq data. BMC Genomics, 15(1), 675. doi:10.1186/1471-2164-15-675
+
 7- https://hpc.nih.gov/apps/sratoolkit.html 
+
 8- Bolger, A. M., Lohse, M., & Usadel, B. (2014). Trimmomatic: A flexible trimmer for Illumina sequence data. Bioinformatics, 30(15), 2114-2120. doi:10.1093/bioinformatics/btu170
+
 9- https://github.com/lh3/seqtk 
+
 10- Kim, D., Langmead, B., & Salzberg, S. L. (2015). HISAT: A fast spliced aligner with low memory requirements. Nature Methods, 12(4), 357-360. doi:10.1038/nmeth.3317
+
 11- Garber, M., Grabherr, M. G., Guttman, M., & Trapnell, C. (2011). Computational methods for transcriptome annotation and quantification using RNA-seq. Nature Methods, 8(6), 469-477. doi:10.1038/nmeth.1613
+
 12- Dobin, A., Davis, C. A., Schlesinger, F., Drenkow, J., Zaleski, C., Jha, S., . . . Gingeras, T. R. (2012). STAR: Ultrafast universal RNA-seq aligner. Bioinformatics, 29(1), 15-21. doi:10.1093/bioinformatics/bts635
+
 13- Shao, M., & Kingsford, C. (2017). Scallop Enables Accurate Assembly Of Transcripts Through Phasing-Preserving Graph Decomposition. doi:10.1101/123612 
+
 14- Li, H., Handsaker, B., Wysoker, A., Fennell, T., Ruan, J., Homer, N., . . . Durbin, R. (2009). The Sequence Alignment/Map format and SAMtools. Bioinformatics, 25(16), 2078-2079. doi:10.1093/bioinformatics/btp352
+
 15- http://cole-trapnell-lab.github.io/cufflinks/ 
+
 16- http://hgdownload.cse.ucsc.edu/admin/exe/linux.x86_64/ 
+
 17- ttps://github.com/gpertea/gffcompare 
+
 18- https://bedtools.readthedocs.io/en/latest/ 
 
 
