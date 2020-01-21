@@ -1,28 +1,28 @@
 # Motivation
 
-  The study of transcriptome enables us to understand the functionality of the genome in different physiological conditions, development stages, and disease status [1]. Two widely used transcriptome data come from poly(A) enriched libraries [16] or poly(A)- library which depends on depleting ribosomal RNA [4]. Both libraries are important in analyzing different functionality and to gain different insights about the cell. However, both libraries are usually assembled by the same RNA-seq assemblers even tho the two libraries exhibit huge content difference [4, 10, 11, 12] that might affect the assemblers' performance differently. Our suspicion is that due to the higher content and difference of ribo-depleted libraries, and since most assemblers were designed to detect the most features of poly(A) libraries, the performance of the assemblers will be compromised for ribo-depleted libraries. This project designed different pipelines for assembling RNA-seq reads coming from both poly(A) and ribo-depleted libraries. We also used assemblers that were made to assemble RNA-seq reads either based on a reference or de novo. The results showed that performance of the assemblers on the same tissue but using different libraries were greatly negatively affected for ribo-depleted RNA-seq.     
+  The study of transcriptome enables us to understand the functionality of the genome in different physiological conditions, development stages, and disease status [1]. Two widely used transcriptome data come from poly(A) enriched libraries [3] or poly(A)- library which depends on depleting ribosomal RNA [2]. Both libraries are important in analyzing different functionality and to gain different insights about the cell. However, both libraries are usually assembled by the same RNA-seq assemblers even tho the two libraries exhibit huge content difference [2, 4, 5, 6] that might affect the assemblers' performance differently. Our suspicion is that due to the higher content and difference of ribo-depleted libraries, and since most assemblers were designed to detect the most features of poly(A) libraries, the performance of the assemblers will be compromised for ribo-depleted libraries. This project designed different pipelines for assembling RNA-seq reads coming from both poly(A) and ribo-depleted libraries. We also used assemblers that were made to assemble RNA-seq reads either based on a reference or de novo. The results showed that performance of the assemblers on the same tissue but using different libraries were greatly negatively affected for ribo-depleted RNA-seq.     
 
 # Materials and Methods
 
 ## Data
 
-  A publicly available dataset [12] was used for the benchmarking analysis. The dataset is composed of paired-end poly(A) and ribo-depleted RNA-seq libraries for the same human tissues, including healthy brain tissues and tumor brain tissues. The reference genome (GRCh38) and transcriptome annotation files were obtained from GENCODE Release 27. 
+  A publicly available dataset [6] was used for the benchmarking analysis. The dataset is composed of paired-end poly(A) and ribo-depleted RNA-seq libraries for the same human tissues, including healthy brain tissues and tumor brain tissues. The reference genome (GRCh38) and transcriptome annotation files were obtained from GENCODE Release 27. 
 
 ## Reads download, quality assurance and data normalization
 
-  The reads were downloaded using the sra-toolkit [18]. For each library preparation, reads coming from the same biological sample in all sequencing lanes were merged together, adapters were trimmed and low-quality reads were discarded using Trimomatic 0.36 [19]. The data was normalized to have equal number  of reads per both libraries. The bigger samples were subsampled randomly using seqtk [25].
+  The reads were downloaded using the sra-toolkit [7]. For each library preparation, reads coming from the same biological sample in all sequencing lanes were merged together, adapters were trimmed and low-quality reads were discarded using Trimomatic 0.36 [8]. The data was normalized to have equal number  of reads per both libraries. The bigger samples were subsampled randomly using seqtk [9].
 
 ## Transcriptome assembly using reference based pipeline
 
-  Two pipelines were used: HISAT2 [5] - StringTie v1.3.4 [8] and STAR v2.5.3a [6] - Scallop [13]. The  aligners were fed with the reference genome to generate indexes, then each pair of the fastq paired reads were given to the aligner to output a sam file. Sam files were sorted and converted to bam files using samtools 1.6 [20]. The bam files were used as input to the assemblers. The assembly was done without reference transcriptome annotation guidance in order to assess the ability of these programs to assemble the correct transcriptome independently. The outputs GTF files of the HISAT-StringTie pipeline for each tissue type were merged into one gtf file using stringtie merge software. Cuffmerge from cufflinks 2.2.1 package [22] was used to do the same for the outputs GTF files of the STAR-Scallop pipeline. 
+  Two pipelines were used: HISAT2 [10] - StringTie v1.3.4 [11] and STAR v2.5.3a [6] - Scallop [12]. The  aligners were fed with the reference genome to generate indexes, then each pair of the fastq paired reads were given to the aligner to output a sam file. Sam files were sorted and converted to bam files using samtools 1.6 [13]. The bam files were used as input to the assemblers. The assembly was done without reference transcriptome annotation guidance in order to assess the ability of these programs to assemble the correct transcriptome independently. The outputs GTF files of the HISAT-StringTie pipeline for each tissue type were merged into one gtf file using stringtie merge software. Cuffmerge from cufflinks 2.2.1 package [14] was used to do the same for the outputs GTF files of the STAR-Scallop pipeline. 
 
 ## Transcriptome assembly using De novo pipeline
 
-  Trinity 2.5.1 was used for de novo assembly. The output fasta files were converted into GTF files using a pipeline of blat, pslToBed, bedToGenPred and GenPredToGTF tools from ucsclib [21]. Cuffmerge was used to merge the resulted GTF files for each tissue type.
+  Trinity 2.5.1 was used for de novo assembly. The output fasta files were converted into GTF files using a pipeline of blat, pslToBed, bedToGenPred and GenPredToGTF tools from ucsclib [15]. Cuffmerge was used to merge the resulted GTF files for each tissue type.
 
 ## Benchmarking Analysis
 
-  Sensitivity and specificity for the detection of transcriptomic features were calculated using gffcompare 0.10.1 [23]. Base pair intersection between the assembled transcriptomes and different genomic parts (intronic, exonic and intergenic) was done using bedtools [24]. Different between-group analysis was done using R.  
+  Sensitivity and specificity for the detection of transcriptomic features were calculated using gffcompare 0.10.1 [16]. Base pair intersection between the assembled transcriptomes and different genomic parts (intronic, exonic and intergenic) was done using bedtools [17]. Different between-group analysis was done using R.  
 
 # Results
 
@@ -70,3 +70,27 @@ In addition to averaging the samples intersection with genomic regions, all samp
 The above highlights the cases where RNA-seq assemblers manage to use most of the information content from poly(A) library, yet fail to assemble ribo-depleted library properly. Big chunk of the data contained in ribo-depleted libraries is mislabeled as intronic regions. 
 
 Further analysis needed is to dig deeper into the assembled transcriptome and compare it to the reference transcriptome. This should give us more insight about the types of errors the assembler are prone to, the additional info retained in ribo-depleted libraries and propose future guidelines for better analysis when using ribo-depleted libraries. 
+
+# References
+
+1- Wang, Z., Gerstein, M., & Snyder, M. (2009). RNA-Seq: A revolutionary tool for transcriptomics. Nature Reviews Genetics, 10(1), 57-63. doi:10.1038/nrg2484
+2- Sultan M, Dokel S, Amstislavskiy V, Wuttig D, Sultmann H, Lehrach H, Yaspo ML. A simple strand-specific RNA-Seq library preparation protocol combining the Illumina TruSeq RNA and the dUTP methods. Biochem Biophys Res Commun. 2012;422(4):643–646. doi: 10.1016/j.bbrc.2012.05.043.
+3- Cui, P., Lin, Q., Ding, F., Xin, C., Gong, W., Zhang, L., . . . Yu, J. (2010). A comparison between ribo-minus RNA-sequencing and polyA-selected RNA-sequencing. Genomics, 96(5), 259-265. doi:10.1016/j.ygeno.2010.07.010
+4- Tariq, M. A., Kim, H. J., Jejelowo, O., & Pourmand, N. (2011). Whole-transcriptome RNAseq analysis from minute amount of total RNA. Nucleic Acids Research, 39(18). doi:10.1093/nar/gkr547
+5- Li, S., Tighe, S. W., Nicolet, C. M., Grove, D., Levy, S., Farmerie, W., . . . Mason, C. E. (2014). Multi-platform assessment of transcriptome profiling using RNA-seq in the ABRF next-generation sequencing study. Nature Biotechnology, 32(9), 915-925. doi:10.1038/nbt.2972
+6- Sultan, M., Amstislavskiy, V., Risch, T., Schuette, M., Dökel, S., Ralser, M., . . . Yaspo, M. (2014). Influence of RNA extraction methods and library selection schemes on RNA-seq data. BMC Genomics, 15(1), 675. doi:10.1186/1471-2164-15-675
+7- https://hpc.nih.gov/apps/sratoolkit.html 
+8- Bolger, A. M., Lohse, M., & Usadel, B. (2014). Trimmomatic: A flexible trimmer for Illumina sequence data. Bioinformatics, 30(15), 2114-2120. doi:10.1093/bioinformatics/btu170
+9- https://github.com/lh3/seqtk 
+10- Kim, D., Langmead, B., & Salzberg, S. L. (2015). HISAT: A fast spliced aligner with low memory requirements. Nature Methods, 12(4), 357-360. doi:10.1038/nmeth.3317
+11- Garber, M., Grabherr, M. G., Guttman, M., & Trapnell, C. (2011). Computational methods for transcriptome annotation and quantification using RNA-seq. Nature Methods, 8(6), 469-477. doi:10.1038/nmeth.1613
+12- Dobin, A., Davis, C. A., Schlesinger, F., Drenkow, J., Zaleski, C., Jha, S., . . . Gingeras, T. R. (2012). STAR: Ultrafast universal RNA-seq aligner. Bioinformatics, 29(1), 15-21. doi:10.1093/bioinformatics/bts635
+13- Shao, M., & Kingsford, C. (2017). Scallop Enables Accurate Assembly Of Transcripts Through Phasing-Preserving Graph Decomposition. doi:10.1101/123612 
+14- Li, H., Handsaker, B., Wysoker, A., Fennell, T., Ruan, J., Homer, N., . . . Durbin, R. (2009). The Sequence Alignment/Map format and SAMtools. Bioinformatics, 25(16), 2078-2079. doi:10.1093/bioinformatics/btp352
+15- http://cole-trapnell-lab.github.io/cufflinks/ 
+16- http://hgdownload.cse.ucsc.edu/admin/exe/linux.x86_64/ 
+17- ttps://github.com/gpertea/gffcompare 
+18- https://bedtools.readthedocs.io/en/latest/ 
+
+
+
